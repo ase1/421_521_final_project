@@ -57,7 +57,7 @@ We spent the weekend coming up with ideas, and the crowd favorite is a toast pri
 
 
 
-#### Safety (for a device with a full-powered laser)
+### Safety (for a device with a full-powered laser)
 We can break safety concerns down to three categories: health, fire, and electrical. 
 
 __Health__. The most threatening safety concern is health - pointing a laser at a person for too long could cause blindness or burns. The easiest countermeasure is to buy the lowest-powered laser that will still accomplish our goal. We're ready to do some testing on Thursday using the OEDK laser cutter to see what powers we realistically need for etching the toast, but online research has shown that we won't need more than 1-2 W. For testing, we'll want to modulate that power down to the mW range (typical laser pointers are 5-10 mW) so we can see what we're doing but aren't creating any threat. The final device will have a door that seals the inside off from the outside, so there can be no leakage of light. We can make this door into a physical switch, so the laser can't receive power unless this door is closed. For testing, we'll also have to get some laser safety glasses, which depend on the wavelength of light produced by the laser. 
