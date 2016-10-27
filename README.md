@@ -1,4 +1,4 @@
-# Toste
+# Kenny Toastman and Andrew Crusty present: Toste
 ![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/20161020_162631.jpg "This is toast.")
 
 <a name="abstract">
