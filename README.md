@@ -12,10 +12,6 @@ We will retrofit a laser and an enclosure with controls onto an old 3D printer t
 
 2. [Safety] (#safety)
 
-3. [Importing the Twitter4J library] (#Import Library)
-
-4. [Getting Data from Twitter to Processing] (#Getting Data)
-
 <a name="brainstorming">
 ### Brainstorming
 We spent the weekend coming up with ideas, and the crowd favorite is a toast printer. You've seen Jesus toast, and we want to take that one step further. Imagine waking up, checking your calendar, reading the newspaper, and ravenously scrounging for something to eat in the morning. Our idea proposes to combine early morning activities using a toaster with a controllable toast pattern. We're considering creating an appliance that internally works like a laser etcher, with the functions of a toaster. We have a non-working 3D printer that we're willing to scavenge for parts. We plan to design the hardware and software experience. Software for generating G-code for laser etching already exists, so we'd probably implement that and focus our efforts on image processing, content production, and hardware control. 
