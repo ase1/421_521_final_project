@@ -1,13 +1,22 @@
-# Taser (Toast Laser) (Laser Toaster) (iToast) (Toastr) Abstract
+# Taser (Toast Laser) (Laser Toaster) (iToast) (Toastr)
 ![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/20161020_162631.jpg "This is toast.")
 
+<a name="abstract">
+### Abstract
 The goal of this project is to create a completely personalized breakfast experience. We will create a device that allows you to wake up to the perfect toast, designed for you. A laser-etching method will be used to burn images, a schedule, an inspirational quote, or the day’s headlines right onto a piece of bread. The device might be set to produce the toast at a particular time (i.e. an alarm clock) or can be used throughout the day. You could upload a selfie (or other images, if those even exist anymore), and the device will automatically process it for printing. We plan to collect data from relevant news websites and social media to allow for an entirely customizable breakfast. 
 
 We will retrofit a laser and an enclosure with controls onto an old 3D printer to create the appliance. Stepper motors will control the position of the laser on the toast. The power of the laser will be modulated at different points on the toast to create different toasting patterns, as dictated by software running on a Raspberry Pi. Software will be developed to combine photos, Web-scraped text, and more into a grayscale image to be burned on the toast, and process this image for printing. This project will aim to recreate the toaster experience using an Arduino to control the knobs, dings, and doors that we’ve all grown to love. 
 
 ### Table of Contents
-_we'll add this when this has more content. Anchor links!_
+1. [Brainstorming] (#brainstorming)
 
+2. [Safety] (#safety)
+
+3. [Importing the Twitter4J library] (#Import Library)
+
+4. [Getting Data from Twitter to Processing] (#Getting Data)
+
+<a name="brainstorming">
 ### Brainstorming
 We spent the weekend coming up with ideas, and the crowd favorite is a toast printer. You've seen Jesus toast, and we want to take that one step further. Imagine waking up, checking your calendar, reading the newspaper, and ravenously scrounging for something to eat in the morning. Our idea proposes to combine early morning activities using a toaster with a controllable toast pattern. We're considering creating an appliance that internally works like a laser etcher, with the functions of a toaster. We have a non-working 3D printer that we're willing to scavenge for parts. We plan to design the hardware and software experience. Software for generating G-code for laser etching already exists, so we'd probably implement that and focus our efforts on image processing, content production, and hardware control. 
 
@@ -56,7 +65,7 @@ We spent the weekend coming up with ideas, and the crowd favorite is a toast pri
    - Arduino stuff
 
 
-
+<a name="safety">
 ### Safety (for a device with a full-powered laser)
 We can break safety concerns down to three categories: health, fire, and electrical. 
 
