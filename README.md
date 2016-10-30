@@ -53,7 +53,7 @@ We spent the weekend coming up with ideas, and the crowd favorite is a toast pri
    - News
    - Notifications
  - Compile into an image for image processing
-   - Image processing
+   - Image processing (see this: http://nebarnix.com/img2gco/)
    - Take existing image and convert to grayscale
    - Create an array of laser voltages per pixel
      - We can just always go line-by-line if that’s easier
