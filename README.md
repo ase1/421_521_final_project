@@ -1,4 +1,4 @@
-# Taser (Toast Laser) (Laser Toaster) (iToast) (Toastr)
+# Kenny Toastman and Andrew Crusty present: Toste
 ![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/20161020_162631.jpg "This is toast.")
 
 <a name="abstract">
@@ -53,7 +53,7 @@ We spent the weekend coming up with ideas, and the crowd favorite is a toast pri
    - News
    - Notifications
  - Compile into an image for image processing
-   - Image processing
+   - Image processing (see this: http://nebarnix.com/img2gco/)
    - Take existing image and convert to grayscale
    - Create an array of laser voltages per pixel
      - We can just always go line-by-line if that’s easier
