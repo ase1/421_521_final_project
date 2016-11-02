@@ -36,10 +36,53 @@ image_2=image_resize(image,128,128) #resize pic to 128 by 128 (change to other n
 
 image_3 = convert_to_grayscale(image_2) #turn image greyscale
 
-image_4 = normalize(image_3) #resize image
+image_4 = normalize(image_3) #normalize image to power percentatges at each voxel image
 
-plt.imshow(image_3, cmap = matplotlib.cm.Greys) #print image for sanity check
+plt.imshow(image_4, cmap = matplotlib.cm.Greys) #print image for sanity check
 plt.show()
 
 
+#Now, flatten this matrix into a vector of powers in the desired order. Also create x and y matrices corresponding
+def flatten(image):
+    N=np.size(image)
+    S=np.shape(image)
+    x_max = S[0]
 
+    print N
+
+    # initialize vectors
+    X=np.zeros(N)
+    Y=np.zeros(N)
+    P=np.zeros(N)
+
+    # initialize counters
+    inc=1
+    x=0
+    y=0
+
+    for i in range(0,N-1):
+        print x,y
+        X[i]=x
+        Y[i]=y
+        P[i]=image[x,y]
+
+        # update counter vars
+        if inc == 1:
+            if x < x_max-1:
+                x = x + 1
+            elif x == x_max-1:
+                y = y + 1
+                inc = 0
+
+        elif inc == 0:
+            if x > 0:
+                x = x - 1
+            elif x == 0:
+                y=y+1
+                inc = 1
+
+    return X,Y,P
+
+
+X,Y,P = flatten(image_4)
+print X[0:10], Y[0:10], P[0:10]
