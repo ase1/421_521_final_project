@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dce96e3e-139e-48e4-9213-78cd17cdc76b" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Image Processing/upload_image.py" afterPath="$PROJECT_DIR$/Image Processing/upload_image.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="421_521_final_project.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -29,7 +29,7 @@
       <file leaf-file-name="upload_image.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Image Processing/upload_image.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="443">
+            <state relative-caret-position="523">
               <caret line="74" column="23" selection-start-line="74" selection-start-column="23" selection-end-line="74" selection-end-column="23" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
@@ -433,7 +433,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Image Processing/upload_image.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="443">
+        <state relative-caret-position="523">
           <caret line="74" column="23" selection-start-line="74" selection-start-column="23" selection-end-line="74" selection-end-column="23" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
