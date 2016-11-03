@@ -86,3 +86,42 @@ def flatten(image):
 
 X,Y,P = flatten(image_4)
 print X[0:10], Y[0:10], P[0:10]
+
+def rescale(X,x_new_min,x_new_max):
+    x_old_min=min(X)
+    x_old_max=max(X)
+    X_new = (X-x_old_min)/(x_old_max -x_old_min)*(x_new_max -x_new_min) + x_new_min
+    return X_new
+
+X_new = rescale(X,0,100)
+#print X_new[0:10]
+
+Y_new = rescale(Y,150,40)
+#print Y_new[0:10]
+
+
+fo=open("gcode.gcode","wb")
+
+#need to add header and opening G CODE
+fo.write(';********Laser Toasted G CODE********** \n')
+fo.write(';**** By Kenny Groszman, Andrew Elsey ******* \n')
+fo.write(';**** Rice University, BIOE 421, Dr. Jordan Miller **** \n')
+fo.write('G90 ; Absolute Coordinates \n')
+fo.write('M3 S0 ; Laser Off \n')
+fo.write('G28 ; motors go Home \n')
+
+
+#WRITE BODY GCODE
+for i in range(len(X_new)):
+    str = 'G0'+' X'+repr(X_new[i])+' Y'+repr(Y_new[i]) + ' F6000\n'
+    fo.write(str)
+
+#SHUTDOWN ROUTINE
+fo.write('G28; platforms go home \n')
+fo.write('G0 Y560 \n')
+fo.write('M3 S0 ; turn laser PWM to zero \n')
+
+
+fo.close()
+
+
