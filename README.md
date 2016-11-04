@@ -1,16 +1,34 @@
-# Kenny Toastman and Andrew Crusty present: Toste
-![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/20161020_162631.jpg "This is toast.")
+# Kenny Toastman and Andrew Crusty present: LaserToasterino
+![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/resources/20161020_162631.jpg "This is toast.")
 
 <a name="abstract">
 ### Abstract
-The goal of this project is to create a completely personalized breakfast experience. We will create a device that allows you to wake up to the perfect toast, designed for you. A laser-etching method will be used to burn images, a schedule, an inspirational quote, or the day’s headlines right onto a piece of bread. The device might be set to produce the toast at a particular time (i.e. an alarm clock) or can be used throughout the day. You could upload a selfie (or other images, if those even exist anymore), and the device will automatically process it for printing. We plan to collect data from relevant news websites and social media to allow for an entirely customizable breakfast. 
+Technological breakthroughs in the last decade have significantly altered the way we experience our everyday lives, from smartphones, smart TV's, and even IoT products like thermostats. One aspect of our lives, though, has not seen any improvements coming from technology for many decades-- toast. The goal of this project is to thrust the breakfast experience into the 21st century. We will create a device that allows you to wake up to a perfect piece of personalized toast. Laser etching will be used to burn images, a daily agenda, an inspirational quote, or the day’s headlines right onto a piece of bread. The device can be used immediately on command, or can be scheduled to have your perfect toast ready for you, right when you wake up. The image to be printed could be a selfie (or other inferior photo) that you upload or content from the Internet, allowing for an entirely customizeable breakfast.
 
-We will retrofit a laser and an enclosure with controls onto an old 3D printer to create the appliance. Stepper motors will control the position of the laser on the toast. The power of the laser will be modulated at different points on the toast to create different toasting patterns, as dictated by software running on a Raspberry Pi. Software will be developed to combine photos, Web-scraped text, and more into a grayscale image to be burned on the toast, and process this image for printing. This project will aim to recreate the toaster experience using an Arduino to control the knobs, dings, and doors that we’ve all grown to love. 
+The device will be comprised of a laser, an enclosure with controls, and a Raspberry Pi retrofitted onto an old 3D printer. Stepper motors will control the position of the laser along the toast, and the power of the laser will be modulated at each point to create different toasting patterns. Software will be developed to combine photos, Web-scraped text, and more into a grayscale image to be burned on the toast, and it will then generate G-code for printing. This project will aim to recreate the toaster experience using an Arduino to control the knobs, dings, and doors that we’ve all grown to love.
 
 ### Table of Contents
-1. [Brainstorming] (#brainstorming)
+1. [Use Flowchart] (#flowchart)
+2. [Software Approach] (#software)
+3. [Hardware Approach] (#hardware)
+4. [Brainstorming] (#brainstorming)
+5. [Safety] (#safety)
 
-2. [Safety] (#safety)
+<a name="flowchart">
+### Use Flowchart
+This flowchart shows the processes and decisions that are made to output the admittedly scrumptious final product. 
+![Flowchart](https://raw.githubusercontent.com/ase1/421_521_final_project/master/resources/flowchart.png "Flowchart showing use cases.")
+
+<a name="software">
+### Software Approach
+We'll be using three boards for this project: a Raspberry Pi, a RAMBo motherboard, and an Arduino Uno. The three main facets of the software are controlling the motors/laser, generating and processing images for toasting into G-code, and displaying a graphical user interface to allow the user to select what they want on their toast. 
+
+<a name="hardware">
+### Hardware Approach
+We have an old 3D printer, inherited from legendary Rice alum Ravi Sheth. We're using this as the base of our project since it already has the dimensional movement that our plotter will require. We want to take apart the printer, remove unnecessary components, and reassemble it inside of an enclosure. We need to install a couple of Arduino-controllable actuators to put some polish on the experience. For EHS reasons, we aren't allowed to use a laser powerful enough to cause blindness, so as a proof of concept, we'll mount a 5mW laser on the machine and test using photographic paper. 
+
+The modified 3D printer hardware was modeled in SolidWorks, and the enclosure was created around it. The enclosure is made of birch plywood, which is fine because the laser isn't powerful enough to burn through it. For the interface with the user, we're using a Raspberry Pi touchscreen display and a couple buttons and knobs for tactile control. A sliding door will shield the user from the laser during operation. 
+
 
 <a name="brainstorming">
 ### Brainstorming
