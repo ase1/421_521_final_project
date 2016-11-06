@@ -2,10 +2,10 @@ Y heights
 
 0.03
 0.10     13
-0.03	 16
+0.03	 16   specific setting buttons
 0.15     31
-0.03     34
+0.03     34   image
 0.50     84
-0.03     87
+0.03     87   toast buttons
 0.10     97
 0.03    
