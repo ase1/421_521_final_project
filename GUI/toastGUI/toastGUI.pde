@@ -7,7 +7,7 @@ PFont numberfont;
 PImage img;
 
 // VARIABLES
-// Display size
+// Display size  
 int display_width = 480;
 int display_height = 800;
 int[] backgroundcolor = {255, 204, 204};
@@ -52,7 +52,31 @@ int adjustX2 = adjustX1+adjustL;
 int adjustY1 = timeY;
 int adjustY2 = adjustY1+adjustH;
 
-// Adjust Arrow Coordinates (oh my god this is so annoying)
+// Adjust Arrow Coordinates (oh my god this is so annoying I'll do it later)
+
+
+// Cancel Button
+int cancelX = (int)(0.80*display_width);
+int cancelY = (int)(0.05*display_width);
+int cancelL = (int)(0.15*display_width);
+
+// Mode 1 Setting Buttons
+int[] settingcolor = {240,90,75};  //fix this eventually
+int m1sX = modeX1;
+int m1sL  = (int)(0.90*display_width);
+int m1sY1  = (int)(0.16*display_height);
+int m1sY2  = (int)(0.24*display_height);
+int m1sH  = (int)(0.06*display_height);
+String[] m1sText = {"Take a selfie!", "Choose an image from file..."};
+
+// Mode 2 Buttons
+int m2sX1 = modeX1;
+int m2sX2 = modeX2;
+int m2sL = modeL;
+int m2sY1 = m1sY1;
+int m2sY2 = m1sY2;
+int m2sH = m1sH;
+String[] m2sText = {"News", "Weather", "Quote", "Tweet"};
 
 
 // initialize functions to store button states
@@ -64,9 +88,17 @@ boolean adjustHUB = false;  // hours up
 boolean adjustHDB = false;  // hours down
 boolean adjustMUB = false;  // minutes up
 boolean adjustMDB = false;  // minutes down
+boolean m1s1B = false;
+boolean m1s2B = false;
+boolean m2s1B = false;
+boolean m2s2B = false;
+boolean m2s3B = false;
+boolean m2s4B = false;
+boolean cancelB = false;
 int hour = 0;  //store scheduled hour
 int minute = 0;  // store scheduled minute
 
+int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 void setup() {
   //fullScreen();
@@ -74,24 +106,52 @@ void setup() {
   img = loadImage("maneatingcarrot.jpg");
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
+  toastmode = 0; //start by asking what the user would like to toast
 }
 
 void draw() {
   checkButtons(mouseX,mouseY);
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
-  fill(modecolor[0], modecolor[1], modecolor[2]);
-  rect(modeX1, modeY, modeL, modeH, cornerrad);
-  rect(modeX2, modeY, modeL, modeH, cornerrad);
+  if (toastmode !=3)
+  {
+    fill(modecolor[0], modecolor[1], modecolor[2]);
+    rect(modeX1, modeY, modeL, modeH, cornerrad);
+    rect(modeX2, modeY, modeL, modeH, cornerrad);
+  }
   
+  if (toastmode != 0){
   image(img, imageX, imageY, imageL, imageL);
+  }
   
-  fill(nowcolor[0], nowcolor[1], nowcolor[2]);
-  ellipse(nowX, nowY, nowL, nowL);
+  if (toastmode == 1 || toastmode == 2)
+  {
+    fill(nowcolor[0], nowcolor[1], nowcolor[2]);
+    ellipse(nowX, nowY, nowL, nowL);
   
-  fill(latercolor[0], latercolor[1], latercolor[2]);
-  ellipse(laterX, laterY, laterL, laterL);
-  rect(timeX, timeY, timeL, timeH, cornerrad);
+    fill(latercolor[0], latercolor[1], latercolor[2]);
+    ellipse(laterX, laterY, laterL, laterL);
+    rect(timeX, timeY, timeL, timeH, cornerrad);
+  }
+  if (toastmode == 1)
+  {
+    fill(settingcolor[0], settingcolor[1], settingcolor[2]);
+    rect(m1sX, m1sY1, m1sL, m1sH, cornerrad);
+    rect(m1sX, m1sY2, m1sL, m1sH, cornerrad);
+  }
+  if (toastmode == 2)
+  {
+    fill(settingcolor[0], settingcolor[1], settingcolor[2]);
+    rect(m2sX1, m2sY1, m2sL, m2sH, cornerrad);
+    rect(m2sX1, m2sY2, m2sL, m2sH, cornerrad);
+    rect(m2sX2, m2sY1, m2sL, m2sH, cornerrad);
+    rect(m2sX2, m2sY2, m2sL, m2sH, cornerrad);
+  }
+  if (toastmode == 3)
+  {
+    fill(settingcolor[0], settingcolor[1], settingcolor[2]);
+    rect(cancelX, cancelY, cancelL, cancelL, 0);
+  }
   drawtext();
 }
 
@@ -100,14 +160,39 @@ void drawtext()
   textFont(buttonfont);
   textAlign(CENTER);
   fill(255);
-  text("Toast from image...",(int)(modeX1+modeL/2),(int)(modeY+modeH/2+8));
-  text("Toast from data",(int)(modeX2+modeL/2),(int)(modeY+modeH/2+8));
-  text("TOAST\nNOW",nowX,nowY-5);
-  text("TOAST\nAT:",laterX,laterY-5);
-  
-  textFont(numberfont);
-  text(printtime(hour), adjustX1+adjustL/2,adjustY1+adjustH+14);
-  text(printtime(minute), adjustX2+adjustL/2,adjustY1+adjustH+14);
+  if (toastmode != 3)
+  {
+    text("Toast from image...",(int)(modeX1+modeL/2),(int)(modeY+modeH/2+8));
+    text("Toast from data",(int)(modeX2+modeL/2),(int)(modeY+modeH/2+8));
+    if (toastmode != 0)
+    {
+      text("TOAST\nNOW",nowX,nowY-5);
+      text("TOAST\nAT:",laterX,laterY-5);
+      
+      textFont(numberfont);
+      text(printtime(hour), adjustX1+adjustL/2,adjustY1+adjustH+14);
+      text(printtime(minute), adjustX2+adjustL/2,adjustY1+adjustH+14);
+    }
+  }
+  textFont(buttonfont);
+  if (toastmode == 1)
+  {
+    text(m1sText[0],(int)(display_width/2),m1sY1+m1sH/2+6);
+    text(m1sText[1],(int)(display_width/2),m1sY2+m1sH/2+6);
+  }
+  if (toastmode == 2)
+  {
+    text(m2sText[0],m2sX1+m2sL/2,m2sY1+m1sH/2+6);
+    text(m2sText[1],m2sX2+m2sL/2,m2sY1+m1sH/2+6);
+    text(m2sText[2],m2sX1+m2sL/2,m2sY2+m1sH/2+6);
+    text(m2sText[3],m2sX2+m2sL/2,m2sY2+m1sH/2+6);
+  }
+  if (toastmode == 3)
+  {
+    textFont(numberfont);
+    text("X",cancelX+cancelL/2,cancelY+cancelL/2+12);
+    textFont(buttonfont);
+  }
 }
 
 void checkButtons(int x, int y) {
@@ -115,7 +200,7 @@ void checkButtons(int x, int y) {
   {
     mode1B = true;
   }
-  else if (overRect(modeX2,modeY,modeL,modeH)) 
+  else if (overRect(modeX2,modeY,modeL,modeH) && toastmode != 3) 
   {
     mode2B = true;
   }
@@ -143,6 +228,34 @@ void checkButtons(int x, int y) {
   {
     adjustMDB = true;
   }
+  else if (overRect(m1sX,m1sY1,m1sL,m1sH) && toastmode == 1)
+  {
+    m1s1B = true;
+  }
+  else if (overRect(m1sX,m1sY2,m1sL,m1sH) && toastmode == 1)
+  {
+    m1s2B = true;
+  }
+  else if (overRect(m2sX1,m2sY1,m2sL,m2sH) && toastmode == 2)
+  {
+    m2s1B = true;
+  }
+  else if (overRect(m2sX2,m2sY1,m2sL,m2sH) && toastmode == 2)
+  {
+    m2s2B = true;
+  }
+  else if (overRect(m2sX1,m2sY2,m2sL,m2sH) && toastmode == 2)
+  {
+    m2s3B = true;
+  }
+  else if (overRect(m2sX2,m2sY2,m2sL,m2sH) && toastmode == 2)
+  {
+    m2s4B = true;
+  }
+  else if(overRect(cancelX,cancelY,cancelL,cancelL) && toastmode==3)
+  {
+    cancelB = true;
+  }
   else {
     mode1B = false;
     mode2B = false; 
@@ -152,55 +265,125 @@ void checkButtons(int x, int y) {
     adjustHDB = false; 
     adjustMUB = false; 
     adjustMDB = false; 
+    m1s1B = false; 
+    m1s2B = false;
+    m2s1B = false;
+    m2s2B = false;
+    m2s3B = false;
+    m2s4B = false;  
+    cancelB = false;
   }
 }
 
 void mousePressed() {
-  if(mode1B) println("Mode Button 1 pressed!");
-  else if(mode2B) println("Mode Button 2 pressed!");
-  else if(nowB) println("Print Now Button pressed!");
-  else if(laterB) println("Print Later Button pressed!");
-  else if(adjustHUB)
+  if (toastmode != 3)
   {
-    hour++;
-    if (hour>23) hour=0;
-    println("Hour up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-    redraw();
-  }
-  else if(adjustHDB)
-  {
-    hour--;
-    if(hour<0) hour=23;
-    println("Hour down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-    redraw();
-  }
-  else if(adjustMUB)
-  {
-    minute++;
-    if (minute>59)
+    if(mode1B)
     {
-      minute = 0;
+      toastmode = 1;
+      println("Toast from image button pressed!");
+    }
+    else if(mode2B) 
+    {
+      toastmode = 2;
+      println("Toast from data button pressed!");
+    }
+  }
+  if (toastmode == 1 || toastmode == 2)  //only able to interact with these buttons when they exist
+  {
+    if(nowB)
+    {
+      toastmode = 3;
+      println("TOAST NOW button pressed!");
+    }
+    else if(laterB) 
+    {
+      toastmode = 3;
+      println("TOAST LATER button pressed!");
+    }
+    else if(adjustHUB)
+    {
       hour++;
       if (hour>23) hour=0;
+      println("Hour up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
+      redraw();
     }
-    println("Minute up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-    redraw();
-  }
-  else if(adjustMDB)
-  {
-    minute--;
-    if (minute<0)
+    else if(adjustHDB)
     {
-      minute=59;
       hour--;
-      if (hour<0) hour=23;
+      if(hour<0) hour=23;
+      println("Hour down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
+      redraw();
     }
-    println("Minute down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-    redraw();
+    else if(adjustMUB)
+    {
+      minute++;  
+      if (minute>59)
+      {
+        minute = 0;
+        hour++;
+        if (hour>23) hour=0;
+      }
+      println("Minute up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
+      redraw();
+    }
+    else if(adjustMDB)
+    {
+      minute--;
+      if (minute<0)
+      {
+        minute=59;
+        hour--;
+        if (hour<0) hour=23;
+      }
+      println("Minute down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
+      redraw();
+    }
+  }
+  
+  if(toastmode == 1)
+  {
+    if(m1s1B)
+    {
+      println(m1sText[0] + " button pressed!");
+    }
+    if(m1s2B)
+    {
+      println(m1sText[1] + " button pressed!");
+    }
+  }
+  
+  if(toastmode == 2)
+  {
+    if(m2s1B)
+    {
+      println(m2sText[0] + " button pressed!");
+    }
+    if(m2s2B)
+    {
+      println(m2sText[1] + " button pressed!");
+    }
+    if(m2s3B)
+    {
+      println(m2sText[2] + " button pressed!");
+    }
+    if(m2s4B)
+    {
+      println(m2sText[3] + " button pressed!");
+    }
+  }
+  
+  if (toastmode ==3)
+  {
+    if (cancelB)
+    {
+      toastmode = 0;
+      println("Cancel button pressed! Returning to main screen. ");
+    }
   }
 }
 
-// sense if the mouse is over a button, from Button example code
+// Sense if the mouse is over a button, from Button example code
 boolean overRect(int x, int y, int width, int height)  {
   if (mouseX >= x && mouseX <= x+width && 
       mouseY >= y && mouseY <= y+height) {
