@@ -1,4 +1,4 @@
-# Kenny Toastman and Andrew Crusty present: LaserToasterino
+# Kenny Toastman and Andrew Crusty present: [LaserToasterino](http://www.naminum.com/append?q=laser%20toaster)
 ![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/resources/20161020_162631.jpg "This is toast.")
 
 <a name="abstract">
