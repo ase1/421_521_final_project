@@ -12,23 +12,25 @@ def image_resize(image,x,y): #define a function to resize an image to x width an
 def gs_convert(pixel): #function to convert image pixel to greyscale using weighted average method from RGB image
     return .299*pixel[0] + .587*pixel[1] * .114*pixel[2]
 
-def convert_to_grayscale(image): #function to convert entire image to grayscale. return 2D numpy array
+def convert_to_grayscale(image): # function to convert entire image to grayscale. return 2D numpy array
     grey = np.zeros((image.shape[0],image.shape[1])) #initialize 2D numpy array
-    for rownum in range(len(image)): #convert image to grayscale using weighted average method
+    for rownum in range(len(image)): # convert image to grayscale using weighted average method
         for colnum in range(len(image[rownum])):
             grey[rownum][colnum]=gs_convert(image[rownum][colnum])
     return grey
 
-def normalize(image): #normalize image intensities to a value between zero and 1
+def normalize(image): # normalize image intensities to a value between zero and 1
     max = np.amax(image)
     return image/max
 
 
-#ask user to input path to the picture they wish to upload...
-root = tk.Tk()
-root.withdraw()
-file_path = filedialog.askopenfilename()
-print file_path  #print path
+imagename = "image_path.txt"
+
+with open(imagename) as f:
+    file_path = f.read().replace('\n','')
+
+
+print file_path  # print path
 
 image = Image.open(file_path)
 
