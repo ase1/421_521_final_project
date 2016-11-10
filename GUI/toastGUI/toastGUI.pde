@@ -321,7 +321,7 @@ void mousePressed() {
     {
       toastmode = 3;
       println("TOAST NOW button pressed!");
-      launch("python upload_image2.py");
+      exec("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
     }
     else if(laterB) 
     {
