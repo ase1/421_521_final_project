@@ -3,9 +3,14 @@
 *   To run on the Raspberry Pi Display
 */
 import java.util.List; 
+import java.io.PrintWriter;
 PFont buttonfont; 
 PFont numberfont;
 PImage img;
+
+
+
+
 
 // Twitter stuff
 static String OAuthConsumerKey = "0Tmzx9UE87VeBZBUO7opb1LrL";
@@ -119,7 +124,6 @@ void setup() {
   toastmode = 0; //start by asking what the user would like to toast
   connectTwitter();
   //twitter.addListener(listener);
-
 }
 
 void draw() {
@@ -362,13 +366,14 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
-      delay(10000);
+      //delay(10000);
       img = loadImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
       
     }
     if(m1s2B)
     {
       println(m1sText[1] + " button pressed!");
+      selectInput("Select a file to process:", "fileSelected");
     }
   }
   
@@ -425,6 +430,22 @@ String printtime(int time)
 {
   if (time<10) return ("0"+time);
   else return (""+time);
+}
+
+void fileSelected(File selection) {
+  if (selection == null) {
+    println("Window was closed or the user hit cancel.");
+  } else {
+    String filepath = selection.getAbsolutePath();
+    println("User selected " + filepath); 
+    try{
+        PrintWriter writer = new PrintWriter("image_path.txt", "UTF-8");
+        writer.println(filepath);
+        writer.close();
+    } catch (Exception e) {
+     println("filename writing to file failed");
+}
+  }
 }
 
 
