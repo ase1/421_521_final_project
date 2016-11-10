@@ -361,9 +361,9 @@ void mousePressed() {
     if(m1s1B)
     {
       println(m1sText[0] + " button pressed!");
-      exec("../selfie/takeselfie.sh");
+      exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
       delay(10000);
-      img = loadImage("../selfie/selfie.jpg");
+      img = loadImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
       
     }
     if(m1s2B)
