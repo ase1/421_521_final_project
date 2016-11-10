@@ -321,7 +321,7 @@ void mousePressed() {
     {
       toastmode = 3;
       println("TOAST NOW button pressed!");
-      exec("upload_image2.py")
+      launch("python upload_image2.py");
     }
     else if(laterB) 
     {
