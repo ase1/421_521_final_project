@@ -7,7 +7,8 @@ import java.io.PrintWriter;
 PFont buttonfont; 
 PFont numberfont;
 PImage img;
-
+PrintWriter pathfile;
+String imagefilepath;
 
 
 
@@ -118,12 +119,15 @@ int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 
 void setup() {
   //fullScreen();
   size(480, 800);
-  img = loadImage("maneatingcarrot.jpg");
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
   connectTwitter();
   //twitter.addListener(listener);
+  pathfile = createWriter("image_path.txt");
+  pathfile.println("maneatingcarrot.jpg");
+  pathfile.flush();
+  pathfile.close();
 }
 
 void draw() {
@@ -140,7 +144,10 @@ void draw() {
   }
   
   if (toastmode != 0){
-  image(img, imageX, imageY, imageL, imageL);
+    String[] filepatharray= loadStrings("image_path.txt");
+    imagefilepath = filepatharray[0];
+    img = loadImage(imagefilepath);
+    image(img, imageX, imageY, imageL, imageL);
   }
   
   if (toastmode == 1 || toastmode == 2)
@@ -366,14 +373,14 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
-      //delay(10000);
-      img = loadImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
-      
+      imagefilepath = "/home/pi/421_521_final_project/GUI/selfie/selfie.jpg";
+      redraw();
     }
     if(m1s2B)
     {
       println(m1sText[1] + " button pressed!");
       selectInput("Select a file to process:", "fileSelected");
+      redraw();
     }
   }
   
@@ -438,16 +445,10 @@ void fileSelected(File selection) {
   } else {
     String filepath = selection.getAbsolutePath();
     println("User selected " + filepath); 
-    try
-    {
-        PrintWriter writer = new PrintWriter("image_path.txt", "UTF-8");
-        writer.println(filepath);
-        writer.close();
-    } 
-    catch (Exception e) 
-    {
-        println("filename writing to file failed");
-    }
+    pathfile = createWriter("image_path.txt");
+    pathfile.println(filepath);
+    pathfile.flush();
+    pathfile.close();
   }
 }
 
