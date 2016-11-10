@@ -41,7 +41,7 @@ image_3 = convert_to_grayscale(image_2) #turn image greyscale
 image_4 = normalize(image_3) #normalize image to power percentatges at each voxel image
 
 plt.imshow(image_4, cmap = matplotlib.cm.Greys) #print image for sanity check
-plt.show()
+#plt.show()
 
 
 #Now, flatten this matrix into a vector of powers in the desired order. Also create x and y matrices corresponding
@@ -50,7 +50,6 @@ def flatten(image):
     S=np.shape(image)
     x_max = S[0]
 
-    print N
 
     # initialize vectors
     X=np.zeros(N)
@@ -63,7 +62,6 @@ def flatten(image):
     y=0
 
     for i in range(0,N-1):
-        print x,y
         X[i]=x
         Y[i]=y
         P[i]=image[x,y]
@@ -87,7 +85,6 @@ def flatten(image):
 
 
 X,Y,P = flatten(image_4)
-print X[0:10], Y[0:10], P[0:10]
 
 def rescale(X,x_new_min,x_new_max):
     x_old_min=min(X)
@@ -96,11 +93,10 @@ def rescale(X,x_new_min,x_new_max):
     return X_new
 
 X_new = rescale(X,0,100)
-#print X_new[0:10]
 
 Y_new = rescale(Y,150,40)
-#print Y_new[0:10]
 
+print "Generating G Code........."
 
 fo=open("gcode.gcode","wb")
 
@@ -126,5 +122,7 @@ fo.write('M3 S0 ; turn laser PWM to zero \n')
 
 
 fo.close()
+
+print "G-Code generated!"
 
 
