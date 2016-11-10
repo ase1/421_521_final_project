@@ -438,13 +438,16 @@ void fileSelected(File selection) {
   } else {
     String filepath = selection.getAbsolutePath();
     println("User selected " + filepath); 
-    try{
+    try
+    {
         PrintWriter writer = new PrintWriter("image_path.txt", "UTF-8");
         writer.println(filepath);
         writer.close();
-    } catch (Exception e) {
-     println("filename writing to file failed");
-}
+    } 
+    catch (Exception e) 
+    {
+        println("filename writing to file failed");
+    }
   }
 }
 
