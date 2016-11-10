@@ -124,8 +124,8 @@ void setup() {
 
 void draw() {
   checkButtons(mouseX,mouseY);
-  rotate(HALF_PI);
-  translate(0,-width);
+  //rotate(HALF_PI);
+  //translate(0,-width);
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
   if (toastmode !=3)
@@ -361,6 +361,10 @@ void mousePressed() {
     if(m1s1B)
     {
       println(m1sText[0] + " button pressed!");
+      exec("../selfie/takeselfie.sh");
+      delay(10000);
+      img = loadImage("../selfie/selfie.jpg");
+      
     }
     if(m1s2B)
     {
