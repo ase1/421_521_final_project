@@ -2,9 +2,19 @@
 *   Andrew Elsey, Kenny Groszman
 *   To run on the Raspberry Pi Display
 */
+import java.util.List; 
 PFont buttonfont; 
 PFont numberfont;
 PImage img;
+
+// Twitter stuff
+static String OAuthConsumerKey = "0Tmzx9UE87VeBZBUO7opb1LrL";
+static String OAuthConsumerSecret = "lVXCemEC2OcUnEOb37dyfGl4bSNHeaRLbSZrRDZqK4LOGFwCP8";
+static String AccessToken = "1636426622-R16coyljuFLDlJwPfGBqlsEWR1jbEXtXZJQa6C8";
+static String AccessTokenSecret = "0XUKsVDrAFIHXo8ksmt8lQkr3tbT4KW1ufMeUQjD6hcwc";
+TwitterStream twitter = new TwitterStreamFactory().getInstance(); 
+
+
 
 // VARIABLES
 // Display size  
@@ -107,10 +117,15 @@ void setup() {
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
+  connectTwitter();
+  //twitter.addListener(listener);
+
 }
 
 void draw() {
   checkButtons(mouseX,mouseY);
+  rotate(HALF_PI);
+  translate(0,-width);
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
   if (toastmode !=3)
@@ -357,19 +372,19 @@ void mousePressed() {
   {
     if(m2s1B)
     {
-      println(m2sText[0] + " button pressed!");
+      println(m2sText[0] + " button pressed!");  // news
     }
     if(m2s2B)
     {
-      println(m2sText[1] + " button pressed!");
+      println(m2sText[1] + " button pressed!");  // weather
     }
     if(m2s3B)
     {
-      println(m2sText[2] + " button pressed!");
+      println(m2sText[2] + " button pressed!");  // quote
     }
     if(m2s4B)
     {
-      println(m2sText[3] + " button pressed!");
+      println(m2sText[3] + " button pressed!");  // tweet
     }
   }
   
@@ -407,3 +422,31 @@ String printtime(int time)
   if (time<10) return ("0"+time);
   else return (""+time);
 }
+
+
+// Initial connection
+void connectTwitter() {
+//twitter.setOAuthConsumer(OAuthConsumerKey, OAuthConsumerSecret);
+AccessToken accessToken = loadAccessToken();
+twitter.setOAuthAccessToken(accessToken);
+}
+// Loading up the access token
+private static AccessToken loadAccessToken() {
+return new AccessToken(AccessToken, AccessTokenSecret);
+}
+
+// This listens for new tweet
+StatusListener listener = new StatusListener() {
+  public void onStatus(Status status) {
+    
+  }
+  public void onStallWarning(StallWarning stallwarning){}
+  public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
+  public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
+  public void onScrubGeo(long userId, long upToStatusId) {
+  System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+  }
+  public void onException(Exception ex) {
+    ex.printStackTrace();
+  }
+};
