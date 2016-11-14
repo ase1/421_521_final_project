@@ -1,43 +1,83 @@
-package twitter4j.examples.timeline;
+import twitter4j.conf.*;
+import twitter4j.*;
+import twitter4j.auth.*;
+import twitter4j.api.*;
+import java.util.*;
 
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+Twitter twitter;
+String searchString;
+List<Status> tweets;
 
-import java.util.List;
+int currentTweet;
+String myTweet;
 
-/**
- * @author Yusuke Yamamoto - yusuke at mac.com
- * @since Twitter4J 2.1.7
- */
-public class GetUserTimeline {
-    /**
-     * Usage: java twitter4j.examples.timeline.GetUserTimeline
-     *
-     * @param args String[]
-     */
-    public static void main(String[] args) {
-        // gets Twitter instance with default credentials
-        Twitter twitter = new TwitterFactory().getInstance();
-        try {
-            List<Status> statuses;
-            String user;
-            if (args.length == 1) {
-                user = args[0];
-                statuses = twitter.getUserTimeline(user);
-            } else {
-                user = twitter.verifyCredentials().getScreenName();
-                statuses = twitter.getUserTimeline();
-            }
-            System.out.println("Showing @" + user + "'s user timeline.");
-            for (Status status : statuses) {
-                System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-            }
-        } catch (TwitterException te) {
-            te.printStackTrace();
-            System.out.println("Failed to get timeline: " + te.getMessage());
-            System.exit(-1);
-        }
+void setup()
+{
+    //size(800,600);
+
+    ConfigurationBuilder cb = new ConfigurationBuilder();
+    cb.setOAuthConsumerKey("0Tmzx9UE87VeBZBUO7opb1LrL");
+    cb.setOAuthConsumerSecret("lVXCemEC2OcUnEOb37dyfGl4bSNHeaRLbSZrRDZqK4LOGFwCP8");
+    cb.setOAuthAccessToken("1636426622-R16coyljuFLDlJwPfGBqlsEWR1jbEXtXZJQa6C8");
+    cb.setOAuthAccessTokenSecret("0XUKsVDrAFIHXo8ksmt8lQkr3tbT4KW1ufMeUQjD6hcwc");
+
+    TwitterFactory tf = new TwitterFactory(cb.build());
+
+    int i = 0; // set the query (like choosing a button)
+    
+    if(i==0) searchString = "from:Inspire_Us";
+    else if (i==1) searchString = "from:WSJ";
+    else if (i==2) searchString = "toaster";
+    else searchString = "";
+    
+    twitter = tf.getInstance();
+
+    getNewTweets();
+
+    currentTweet = 0;
+
+    thread("refreshTweets");
+    
+    Status status = tweets.get(0);  //get latest tweet
+    
+    myTweet = status.getText();
+    println(myTweet);
+    if(myTweet.indexOf("http")==-1 && myTweet.indexOf("RT")==-1)
+    {
+      
+    }
+}
+
+void draw()
+{
+    
+}
+
+void getNewTweets()
+{
+    try
+    {
+        Query query = new Query(searchString);
+
+        QueryResult result = twitter.search(query);
+
+        tweets = result.getTweets();
+    }
+    catch (TwitterException te)
+    {
+        System.out.println("Failed to search tweets: " + te.getMessage());
+        System.exit(-1);
+    }
+}
+
+void refreshTweets()
+{
+    while (true)
+    {
+        getNewTweets();
+
+        //println("Updated Tweets");
+
+        delay(30000);  //get new tweets every 30 seconds
     }
 }
