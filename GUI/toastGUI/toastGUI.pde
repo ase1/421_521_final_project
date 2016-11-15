@@ -506,8 +506,11 @@ String getATweet(String query, boolean isFiltered)
       tweetnum++;
       //println("bad tweet: " + myTweet);
     }
-    else if(myTweet.matches("\\p{ASCII}")) tweetnum++;  //filters out bad characters like emojis
     else tweetIsGood = true;
+  }
+  if(!isFiltered && myTweet.indexOf("http")!=-1 )
+  {
+    myTweet = myTweet.substring(0,myTweet.indexOf("http"));
   }
   return myTweet;
 }
