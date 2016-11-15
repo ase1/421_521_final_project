@@ -124,10 +124,7 @@ void setup() {
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
-  pathfile = createWriter("image_path.txt");
-  pathfile.println("maneatingcarrot.jpg");
-  pathfile.flush();
-  pathfile.close();
+  updateImage("maneatingcarrot.jpg");
 }
 
 void draw() {
@@ -374,10 +371,7 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
-      pathfile = createWriter("image_path.txt");
-      pathfile.println("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
-      pathfile.flush();
-      pathfile.close();
+      updateImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
     }
     if(m1s2B)
     {
@@ -392,12 +386,9 @@ void mousePressed() {
     if(m2s1B)
     {
       println(m2sText[0] + " button pressed!");  // news
-      myQuery = "from:WSJ";  //grab news headlines from the Wall Street Journal twitter
+      myQuery = "from:wsj";  //grab news headlines from the Wall Street Journal twitter
       println(getATweet(myQuery,false));
-      pathfile = createWriter("image_path.txt");
-      pathfile.println(textToImage(getATweet(myQuery,false)));
-      pathfile.flush();
-      pathfile.close();
+      updateImage(textToImage(getATweet(myQuery,false)));
     }
     if(m2s2B)
     {
@@ -409,20 +400,14 @@ void mousePressed() {
       println(m2sText[2] + " button pressed!");  // quote
       myQuery = "from:Inspire_Us";  //grab quotes from a twitter bot
       println(getATweet(myQuery,true));
-      pathfile = createWriter("image_path.txt");
-      pathfile.println(textToImage(wrapText(getATweet(myQuery,true))));
-      pathfile.flush();
-      pathfile.close();
+      updateImage(textToImage(getATweet(myQuery,true)));
     }
     if(m2s4B)
     {
       println(m2sText[3] + " button pressed!");  // tweet
       myQuery = "toaster";  //grab news headlines from the Wall Street Journal twitter
       println(getATweet(myQuery,true));
-      pathfile = createWriter("image_path.txt");
-      pathfile.println(textToImage(wrapText(getATweet(myQuery,true))));
-      pathfile.flush();
-      pathfile.close();
+      updateImage(textToImage(getATweet(myQuery,true)));
     }
   }
   
@@ -479,14 +464,14 @@ void getNewTweets(String myQuery)
 {
   try
   {
-      Query query = new Query(myQuery);
-      QueryResult result = twitter.search(query);
-      tweets = result.getTweets();
+    Query query = new Query(myQuery);
+    QueryResult result = twitter.search(query);
+    tweets = result.getTweets();
   }
   catch (TwitterException te)
   {
-      System.out.println("Failed to search tweets: " + te.getMessage());
-      System.exit(-1);
+    System.out.println("Failed to search tweets: " + te.getMessage());
+    System.exit(-1);
   }
 }
 
@@ -516,11 +501,12 @@ String getATweet(String query, boolean isFiltered)
   {
     Status status = tweets.get(tweetnum);  //get latest tweet
     myTweet = status.getText();  // the content from the tweet
-    if(isFiltered && (myTweet.indexOf("http")!=-1 || myTweet.indexOf("RT")!=-1))  //filters bad tweets out
+    if(isFiltered && (myTweet.indexOf("http")!=-1 || myTweet.indexOf("RT")!=-1 ))  //filters bad tweets out
     {
       tweetnum++;
       //println("bad tweet: " + myTweet);
     }
+    else if(myTweet.matches("\\p{ASCII}")) tweetnum++;  //filters out bad characters like emojis
     else tweetIsGood = true;
   }
   return myTweet;
@@ -536,7 +522,7 @@ String textToImage(String text)
   pg.textFont(imageFont);
   pg.textAlign(CENTER);
   pg.fill(255,0,0);
-  pg.text(wrapTex(text,fontsize),250,100);
+  pg.text(wrapText(text,fontsize),250,100);
   pg.save("generated_image.jpg");
   return "generated_image.jpg";
 }
@@ -561,7 +547,7 @@ int wrapCountNumLines(String text)
 {
   int charsPerLine = 20;
   int index = 0;
-  int count;
+  int count=0;
   while(index < text.length()-charsPerLine)
   {
      index = index+charsPerLine;
@@ -573,4 +559,12 @@ int wrapCountNumLines(String text)
      count++;
   }
   return count;
+}
+
+void updateImage(String filepath)
+{
+  pathfile = createWriter("image_path.txt");
+  pathfile.println(filepath);
+  pathfile.flush();
+  pathfile.close();
 }
