@@ -14,6 +14,7 @@ PFont numberfont;
 PImage img;
 PrintWriter pathfile;
 String imagefilepath;
+PGraphics pg;
 
 // Twitter stuff
 Twitter twitter;
@@ -393,6 +394,10 @@ void mousePressed() {
       println(m2sText[0] + " button pressed!");  // news
       myQuery = "from:WSJ";  //grab news headlines from the Wall Street Journal twitter
       println(getATweet(myQuery,false));
+      pathfile = createWriter("image_path.txt");
+      pathfile.println(textToImage(getATweet(myQuery,false)));
+      pathfile.flush();
+      pathfile.close();
     }
     if(m2s2B)
     {
@@ -404,12 +409,20 @@ void mousePressed() {
       println(m2sText[2] + " button pressed!");  // quote
       myQuery = "from:Inspire_Us";  //grab quotes from a twitter bot
       println(getATweet(myQuery,true));
+      pathfile = createWriter("image_path.txt");
+      pathfile.println(textToImage(wrapText(getATweet(myQuery,true))));
+      pathfile.flush();
+      pathfile.close();
     }
     if(m2s4B)
     {
       println(m2sText[3] + " button pressed!");  // tweet
       myQuery = "toaster";  //grab news headlines from the Wall Street Journal twitter
       println(getATweet(myQuery,true));
+      pathfile = createWriter("image_path.txt");
+      pathfile.println(textToImage(wrapText(getATweet(myQuery,true))));
+      pathfile.flush();
+      pathfile.close();
     }
   }
   
@@ -511,4 +524,53 @@ String getATweet(String query, boolean isFiltered)
     else tweetIsGood = true;
   }
   return myTweet;
+}
+
+String textToImage(String text)
+{
+  pg=createGraphics(500,500);
+  pg.beginDraw();
+  pg.background(255);
+  int fontsize = 60;
+  PFont imageFont = createFont("Garamond",fontsize);
+  pg.textFont(imageFont);
+  pg.textAlign(CENTER);
+  pg.fill(255,0,0);
+  pg.text(wrapTex(text,fontsize),250,100);
+  pg.save("generated_image.jpg");
+  return "generated_image.jpg";
+}
+
+String wrapText(String text, int fontsize)
+{
+  int charsPerLine = fontsize/3;
+  int index = 0;
+  while(index < text.length()-charsPerLine)
+  {
+     index = index+charsPerLine;
+     while(text.charAt(index)!=' ' && index != 0)
+     {
+        index--;       
+     }
+     text = text.substring(0,index) + "\n" + text.substring(index,text.length());
+  }
+  return text;
+}
+
+int wrapCountNumLines(String text)
+{
+  int charsPerLine = 20;
+  int index = 0;
+  int count;
+  while(index < text.length()-charsPerLine)
+  {
+     index = index+charsPerLine;
+     while(text.charAt(index)!=' ' && index != 0)
+     {
+        index--;       
+     }
+     text = text.substring(0,index) + "\n" + text.substring(index,text.length());
+     count++;
+  }
+  return count;
 }
