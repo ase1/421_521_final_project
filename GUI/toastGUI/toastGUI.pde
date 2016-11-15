@@ -2,25 +2,26 @@
 *   Andrew Elsey, Kenny Groszman
 *   To run on the Raspberry Pi Display
 */
-import java.util.List; 
 import java.io.PrintWriter;
+import twitter4j.conf.*;
+import twitter4j.*;
+import twitter4j.auth.*;
+import twitter4j.api.*;
+import java.util.*;
+
 PFont buttonfont; 
 PFont numberfont;
 PImage img;
 PrintWriter pathfile;
 String imagefilepath;
 
-
-
-
 // Twitter stuff
-static String OAuthConsumerKey = "0Tmzx9UE87VeBZBUO7opb1LrL";
-static String OAuthConsumerSecret = "lVXCemEC2OcUnEOb37dyfGl4bSNHeaRLbSZrRDZqK4LOGFwCP8";
-static String AccessToken = "1636426622-R16coyljuFLDlJwPfGBqlsEWR1jbEXtXZJQa6C8";
-static String AccessTokenSecret = "0XUKsVDrAFIHXo8ksmt8lQkr3tbT4KW1ufMeUQjD6hcwc";
-TwitterStream twitter = new TwitterStreamFactory().getInstance(); 
-
-
+Twitter twitter;
+List<Status> tweets;
+int tweetnum;
+String myTweet;
+boolean tweetIsGood;
+String myQuery;
 
 // VARIABLES
 // Display size  
@@ -122,8 +123,6 @@ void setup() {
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
-  connectTwitter();
-  //twitter.addListener(listener);
   pathfile = createWriter("image_path.txt");
   pathfile.println("maneatingcarrot.jpg");
   pathfile.flush();
@@ -374,8 +373,10 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
-      imagefilepath = "/home/pi/421_521_final_project/GUI/selfie/selfie.jpg";
-      redraw();
+      pathfile = createWriter("image_path.txt");
+      pathfile.println("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
+      pathfile.flush();
+      pathfile.close();
     }
     if(m1s2B)
     {
@@ -390,18 +391,25 @@ void mousePressed() {
     if(m2s1B)
     {
       println(m2sText[0] + " button pressed!");  // news
+      myQuery = "from:WSJ";  //grab news headlines from the Wall Street Journal twitter
+      println(getATweet(myQuery,false));
     }
     if(m2s2B)
     {
       println(m2sText[1] + " button pressed!");  // weather
+      //exec(getWeather.sh);
     }
     if(m2s3B)
     {
       println(m2sText[2] + " button pressed!");  // quote
+      myQuery = "from:Inspire_Us";  //grab quotes from a twitter bot
+      println(getATweet(myQuery,true));
     }
     if(m2s4B)
     {
       println(m2sText[3] + " button pressed!");  // tweet
+      myQuery = "toaster";  //grab news headlines from the Wall Street Journal twitter
+      println(getATweet(myQuery,true));
     }
   }
   
@@ -454,29 +462,53 @@ void fileSelected(File selection) {
 }
 
 
-// Initial connection
-void connectTwitter() {
-//twitter.setOAuthConsumer(OAuthConsumerKey, OAuthConsumerSecret);
-AccessToken accessToken = loadAccessToken();
-twitter.setOAuthAccessToken(accessToken);
-}
-// Loading up the access token
-private static AccessToken loadAccessToken() {
-return new AccessToken(AccessToken, AccessTokenSecret);
+void getNewTweets(String myQuery)
+{
+  try
+  {
+      Query query = new Query(myQuery);
+      QueryResult result = twitter.search(query);
+      tweets = result.getTweets();
+  }
+  catch (TwitterException te)
+  {
+      System.out.println("Failed to search tweets: " + te.getMessage());
+      System.exit(-1);
+  }
 }
 
-// This listens for new tweet
-StatusListener listener = new StatusListener() {
-  public void onStatus(Status status) {
-    
+void refreshTweets()
+{
+  while (true)
+  {
+    getNewTweets(myQuery);
+    delay(30000);  //get new tweets every 30 seconds
   }
-  public void onStallWarning(StallWarning stallwarning){}
-  public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {}
-  public void onTrackLimitationNotice(int numberOfLimitedStatuses) {}
-  public void onScrubGeo(long userId, long upToStatusId) {
-  System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+}
+
+String getATweet(String query, boolean isFiltered)
+{
+  ConfigurationBuilder cb = new ConfigurationBuilder();
+  cb.setOAuthConsumerKey("0Tmzx9UE87VeBZBUO7opb1LrL");
+  cb.setOAuthConsumerSecret("lVXCemEC2OcUnEOb37dyfGl4bSNHeaRLbSZrRDZqK4LOGFwCP8");
+  cb.setOAuthAccessToken("1636426622-R16coyljuFLDlJwPfGBqlsEWR1jbEXtXZJQa6C8");
+  cb.setOAuthAccessTokenSecret("0XUKsVDrAFIHXo8ksmt8lQkr3tbT4KW1ufMeUQjD6hcwc");
+  TwitterFactory tf = new TwitterFactory(cb.build()); 
+  twitter = tf.getInstance();
+  getNewTweets(query);
+  thread("refreshTweets");
+  tweetIsGood = false;
+  tweetnum=0;
+  while(!tweetIsGood)
+  {
+    Status status = tweets.get(tweetnum);  //get latest tweet
+    myTweet = status.getText();  // the content from the tweet
+    if(isFiltered && (myTweet.indexOf("http")!=-1 || myTweet.indexOf("RT")!=-1))  //filters bad tweets out
+    {
+      tweetnum++;
+      //println("bad tweet: " + myTweet);
+    }
+    else tweetIsGood = true;
   }
-  public void onException(Exception ex) {
-    ex.printStackTrace();
-  }
-};
+  return myTweet;
+}
