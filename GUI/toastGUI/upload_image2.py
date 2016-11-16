@@ -96,6 +96,9 @@ X_new = rescale(X,0,100)
 
 Y_new = rescale(Y,150,40)
 
+P_new = rescale(P,0,255)
+P_new = np.floor(P_new)
+
 print "Generating G Code........."
 
 fo=open("gcode.gcode","wb")
@@ -112,6 +115,8 @@ fo.write('G28 ; motors go Home \n')
 #WRITE BODY GCODE
 for i in range(len(X_new)):
     str = 'G0'+' X'+repr(X_new[i])+' Y'+repr(Y_new[i]) + ' F6000\n'
+    fo.write(str)
+    str = 'M106' + ' S' + repr(P_new[i]) + '\n'
     fo.write(str)
 
 
