@@ -123,7 +123,7 @@ for i in range(len(X_new)):
 #SHUTDOWN ROUTINE
 fo.write('G28; platforms go home \n')
 fo.write('G0 Y560 \n')
-fo.write('M3 S0 ; turn laser PWM to zero \n')
+fo.write('M106 S0 ; turn laser PWM to zero \n')
 
 
 fo.close()
