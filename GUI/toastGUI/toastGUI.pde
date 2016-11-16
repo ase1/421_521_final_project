@@ -2,6 +2,7 @@
 *   Andrew Elsey, Kenny Groszman
 *   To run on the Raspberry Pi Display
 */
+
 import java.io.PrintWriter;
 import twitter4j.conf.*;
 import twitter4j.*;
@@ -13,6 +14,7 @@ PFont buttonfont;
 PFont numberfont;
 PImage img;
 PrintWriter pathfile;
+PrintWriter timekeeper;
 String imagefilepath;
 PGraphics pg;
 
@@ -113,8 +115,8 @@ boolean m2s2B = false;
 boolean m2s3B = false;
 boolean m2s4B = false;
 boolean cancelB = false;
-int hour = 0;  //store scheduled hour
-int minute = 0;  // store scheduled minute
+int hour;  //store scheduled hour
+int minute;  // store scheduled minute
 
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
@@ -125,6 +127,8 @@ void setup() {
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
   updateImage("maneatingcarrot.jpg");
+  hour = getScheduledHour();
+  minute = getScheduledMinute();
 }
 
 void draw() {
@@ -330,14 +334,13 @@ void mousePressed() {
       hour++;
       if (hour>23) hour=0;
       println("Hour up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-      redraw();
     }
     else if(adjustHDB)
     {
       hour--;
       if(hour<0) hour=23;
       println("Hour down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-      redraw();
+      //updateTime(hour,minute);
     }
     else if(adjustMUB)
     {
@@ -349,7 +352,7 @@ void mousePressed() {
         if (hour>23) hour=0;
       }
       println("Minute up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-      redraw();
+      //updateTime(hour,minute);
     }
     else if(adjustMDB)
     {
@@ -361,7 +364,7 @@ void mousePressed() {
         if (hour<0) hour=23;
       }
       println("Minute down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-      redraw();
+      //updateTime(hour,minute);
     }
   }
   
@@ -419,6 +422,11 @@ void mousePressed() {
       println("Cancel button pressed! Returning to main screen. ");
     }
   }
+  
+  if(getScheduledHour() != hour || getScheduledMinute() != minute)
+  {
+    updateTime(hour, minute);
+  }
 }
 
 // Sense if the mouse is over a button, from Button example code
@@ -452,10 +460,7 @@ void fileSelected(File selection) {
   } else {
     String filepath = selection.getAbsolutePath();
     println("User selected " + filepath); 
-    pathfile = createWriter("image_path.txt");
-    pathfile.println(filepath);
-    pathfile.flush();
-    pathfile.close();
+    updateImage(filepath);
   }
 }
 
@@ -570,4 +575,24 @@ void updateImage(String filepath)
   pathfile.println(filepath);
   pathfile.flush();
   pathfile.close();
+}
+
+void updateTime(int h, int m)
+{
+  timekeeper = createWriter("scheduledtime.txt");
+  timekeeper.println(h + ":" + m);
+  timekeeper.flush();
+  timekeeper.close();
+}
+
+int getScheduledHour()
+{
+  String[] timearray= loadStrings("scheduledtime.txt");
+  return Integer.parseInt(timearray[0].substring(0,timearray[0].indexOf(":")));
+}
+
+int getScheduledMinute()
+{
+  String[] timearray= loadStrings("scheduledtime.txt");
+  return Integer.parseInt(timearray[0].substring(timearray[0].indexOf(":")+1,timearray[0].length()));
 }
