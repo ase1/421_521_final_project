@@ -1,0 +1,13 @@
+#! /bin/bash
+
+#the idea is to run pronsole right from the bash script....
+
+python pronsole.py
+
+connect
+
+load gcode.gcode
+
+
+
+

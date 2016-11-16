@@ -1,0 +1,25 @@
+#! /usr/bin/env python
+
+print "your code is running..."
+
+
+from printrun.printcore import printcore
+from printrun import gcoder
+p = printcore('/dev/ttyACM0',250000)
+print "you are connected"
+
+
+gcode = [i.strip() for i in open('gcode.gcode')]
+
+print gcode
+
+gcode = gcoder.LightGCode(gcode)
+
+print "your gcode is loaded"
+
+print gcode
+
+p.send_now("M105")
+
+
+p.disconnect()
