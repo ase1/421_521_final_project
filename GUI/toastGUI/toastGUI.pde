@@ -10,7 +10,7 @@ import twitter4j.auth.*;
 import twitter4j.api.*;
 import java.util.*;
 import processing.serial.*;
-import cc.arduino.*;
+import cc.arduino.*;  //make sure you import the Arduino library (Sketch > Import Library > Add Library > Arduino(Firmata))
 
 PFont buttonfont; 
 PFont numberfont;
@@ -612,7 +612,6 @@ int readPot(Arduino arduino)  //reads the value of the potentiometer
   power = arduino.analogRead(pinnum);
   int percentpower = (int)((double)power/10.23);
   return percentpower;
-  //println();
 }
 
 void storePot(int percentpower)  //stores the percent power for kenny's python script
