@@ -4,7 +4,7 @@
 from printrun.printcore import printcore
 from printrun import gcoder
 
-
+    
 p=printcore('COM3',250000) # or p.printcore('COM3',115200) on Windows
 print('1')
 gcode=[i.strip() for i in open('gcode.gcode')] # or pass in your own array of gcode lines instead of reading from a file
