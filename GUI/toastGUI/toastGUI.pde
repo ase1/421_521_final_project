@@ -9,14 +9,18 @@ import twitter4j.*;
 import twitter4j.auth.*;
 import twitter4j.api.*;
 import java.util.*;
+import processing.serial.*;
+import cc.arduino.*;
 
 PFont buttonfont; 
 PFont numberfont;
 PImage img;
 PrintWriter pathfile;
 PrintWriter timekeeper;
+PrintWriter powerranger;
 String imagefilepath;
 PGraphics pg;
+Arduino arduino;
 
 // Twitter stuff
 Twitter twitter;
@@ -117,12 +121,15 @@ boolean m2s4B = false;
 boolean cancelB = false;
 int hour;  //store scheduled hour
 int minute;  // store scheduled minute
+int power; // power level
 
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 void setup() {
   //fullScreen();
   size(480, 800);
+  //println(Arduino.list());    //get a list of the ports
+  arduino = new Arduino(this, Arduino.list()[2], 57600);  //initialize arduino
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
   toastmode = 0; //start by asking what the user would like to toast
@@ -132,6 +139,7 @@ void setup() {
 }
 
 void draw() {
+  power = readPot(arduino);
   checkButtons(mouseX,mouseY);
   //rotate(HALF_PI);
   //translate(0,-width);
@@ -595,4 +603,22 @@ int getScheduledMinute()
 {
   String[] timearray= loadStrings("scheduledtime.txt");
   return Integer.parseInt(timearray[0].substring(timearray[0].indexOf(":")+1,timearray[0].length()));
+}
+
+int readPot(Arduino arduino)  //reads the value of the potentiometer
+{
+  int pinnum = 0;
+  arduino.pinMode(pinnum,Arduino.INPUT);
+  power = arduino.analogRead(pinnum);
+  int percentpower = (int)((double)power/10.23);
+  return percentpower;
+  //println();
+}
+
+void storePot(int percentpower)  //stores the percent power for kenny's python script
+{
+  powerranger = createWriter("powerlevel.txt");
+  powerranger.println(percentpower);
+  powerranger.flush();
+  powerranger.close();
 }
