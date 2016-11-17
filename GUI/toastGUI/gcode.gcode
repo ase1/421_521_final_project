@@ -32774,4 +32774,4 @@ G0 X0.0 Y150.0 F6000
 M106 S0.0
 G28; platforms go home 
 G0 Y560 
-M3 S0 ; turn laser PWM to zero 
+M106 S0 ; turn laser PWM to zero 

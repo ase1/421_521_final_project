@@ -25,7 +25,7 @@ print "printing...."
 p.startprint(gcode) #PRINT YOUR CODE!!!
 
 #to prevent system from exiting before the print is done, sleep for 3 minutes.... we can tune thus number later
-time.sleep(180)
+time.sleep(300)
 
 print "your toast is complete!"
 
