@@ -92,9 +92,9 @@ def rescale(X,x_new_min,x_new_max):
     X_new = (X-x_old_min)/(x_old_max -x_old_min)*(x_new_max -x_new_min) + x_new_min
     return X_new
 
-X_new = rescale(X,0,100)
+X_new = rescale(X,10,110)
 
-Y_new = rescale(Y,150,40)
+Y_new = rescale(Y,160,60)
 
 P_new = rescale(P,0,255)
 P_new = np.floor(P_new)
