@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=run_printcore_open
+Comment=Describe your script here
+Exec=/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh
+Terminal=false
+Type=Application
