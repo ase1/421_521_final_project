@@ -713,6 +713,12 @@ void emergencyStop(boolean stop)
 void autoLaunch(int delaytime)
 {
   delay(delaytime);
+  robot.keyPress(KeyEvent.VK_ALT);
+  robot.keyPress(KeyEvent.VK_TAB);
+  delay(30);
+  robot.keyRelease(KeyEvent.VK_TAB);
+  robot.keyRelease(KeyEvent.VK_ALT);
+  delay(30);
   robot.keyPress(KeyEvent.VK_LEFT);
   robot.keyRelease(KeyEvent.VK_LEFT);
   delay(20);
