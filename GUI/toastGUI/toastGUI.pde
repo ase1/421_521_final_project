@@ -15,7 +15,7 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
-PFont buttonfont; 
+PFont buttonfont;
 PFont numberfont;
 PImage img;
 PrintWriter pathfile;
@@ -351,10 +351,10 @@ void mousePressed() {
     {
       toastmode = 3;
       println("TOAST NOW button pressed!");
-      launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.desktop");
+      launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
       autoLaunch(2000);
       delay(5000);  //wait for processing
-      launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.desktop");
+      launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
       autoLaunch(2000);
     }
     else if(laterB) 
