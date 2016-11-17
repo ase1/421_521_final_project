@@ -139,8 +139,8 @@ void setup() {
   size(480, 800);
   //println(Arduino.list());            //get a list of the ports
   //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
-  buttonfont = createFont("Garamond", 24);
-  numberfont = createFont("Garamond", 48);
+  buttonfont = createFont("Gentium Basic", 24);
+  numberfont = createFont("Gentium Basic", 48);
   toastmode = 0;                        //start by asking what the user would like to toast
   updateImage("maneatingcarrot.jpg");   //default image, obviously
   hour = getScheduledHour();            //grab the stored time
@@ -547,7 +547,7 @@ String textToImage(String text)
   pg.beginDraw();
   pg.background(255);
   int fontsize = 60;
-  PFont imageFont = createFont("Garamond",fontsize);
+  PFont imageFont = createFont("Gentium Basic",fontsize);
   pg.textFont(imageFont);
   pg.textAlign(CENTER);
   pg.fill(255,0,0);
