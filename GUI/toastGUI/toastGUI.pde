@@ -18,9 +18,9 @@ PImage img;
 PrintWriter pathfile;
 PrintWriter timekeeper;
 PrintWriter powerranger;
+PrintWriter officersafety; 
 String imagefilepath;
 PGraphics pg;
-//Arduino arduino;
 
 // Twitter stuff
 Twitter twitter;
@@ -29,6 +29,14 @@ int tweetnum;
 String myTweet;
 boolean tweetIsGood;
 String myQuery;
+
+// Arduino stuff
+/*Arduino arduino;
+int potpin = 0;
+int doorpin = 8;
+int bellpin = 9; 
+int stoppin = 10; 
+*/
 
 // VARIABLES
 // Display size  
@@ -129,21 +137,20 @@ int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 
 void setup() {
   //fullScreen();
   size(480, 800);
-  //println(Arduino.list());    //get a list of the ports
+  //println(Arduino.list());            //get a list of the ports
   //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
   buttonfont = createFont("Garamond", 24);
   numberfont = createFont("Garamond", 48);
-  toastmode = 0; //start by asking what the user would like to toast
-  updateImage("maneatingcarrot.jpg");
-  hour = getScheduledHour();
+  toastmode = 0;                        //start by asking what the user would like to toast
+  updateImage("maneatingcarrot.jpg");   //default image, obviously
+  hour = getScheduledHour();            //grab the stored time
   minute = getScheduledMinute();
+  emergencyStop(false); 
 }
 
 void draw() {
-  //power = readPot(arduino);
   checkButtons(mouseX,mouseY);
-  //rotate(HALF_PI);
-  //translate(0,-width);
+  //arduinoLoop();
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
   if (toastmode !=3)
@@ -318,11 +325,13 @@ void mousePressed() {
     {
       toastmode = 1;
       println("Toast from image button pressed!");
+      emergencyStop(false);  //turns off emergency stop, if it's on
     }
     else if(mode2B) 
     {
       toastmode = 2;
       println("Toast from data button pressed!");
+      emergencyStop(false);  //turns off emergency stop, if it's on
     }
   }
   if (toastmode == 1 || toastmode == 2)  //only able to interact with these buttons when they exist
@@ -417,7 +426,7 @@ void mousePressed() {
     if(m2s4B)
     {
       println(m2sText[3] + " button pressed!");  // tweet
-      myQuery = "toaster";  //grab news headlines from the Wall Street Journal twitter
+      myQuery = "toaster";  //grab tweets containing the word "toaster"
       println(getATweet(myQuery,true));
       updateImage(textToImage(getATweet(myQuery,true)));
     }
@@ -429,6 +438,7 @@ void mousePressed() {
     {
       toastmode = 0;
       println("Cancel button pressed! Returning to main screen. ");
+      emergencyStop(true);
     }
   }
   
@@ -607,14 +617,65 @@ int getScheduledMinute()
 }
 
 /*
+void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
+{
+  readStop(arduino)
+  power = readPot(arduino);
+  
+}
+
 int readPot(Arduino arduino)  //reads the value of the potentiometer
 {
-  int pinnum = 0;
-  arduino.pinMode(pinnum,Arduino.INPUT);
-  power = arduino.analogRead(pinnum);
+  arduino.pinMode(potpin,Arduino.INPUT);
+  power = arduino.analogRead(potpin);
   int percentpower = (int)((double)power/10.23);
   return percentpower;
 }
+
+void readStop(Arduino arduino)
+{
+  arduino.pinMode(stoppin, Arduino.INPUT);
+  if(arduino.digitalRead(stoppin)==Arduino.HIGH) emergencyStop(true);
+}
+
+void openDoor(Arduino arduino)
+{
+  int dooropen = 180; 
+  int doorclosed = 0;
+  int speed = 10;  //step rate of servo
+  arduino.pinMode(doorpin,arduino.SERVO);
+  int j = 0;
+  while(j < dooropen)
+  {
+    arduino.servoWrite(doorpin,j);
+    delay(10);
+    j = j+speed;
+  }
+}
+
+void closeDoor(Arduino arduino)
+{
+  int dooropen = 180; 
+  int doorclosed = 0;
+  int speed = 10;  //step rate of servo
+  arduino.pinMode(doorpin,arduino.SERVO);
+  int j = 180;
+  while(j > doorclosed)
+  {
+    arduino.servoWrite(doorpin,j);
+    delay(10);
+    j = j-speed;
+  }
+}
+
+void ringBell(Arduino arduino)
+{
+  arduino.pinMode(bellpin,arduino.SERVO);
+  arduino.servoWrite(bellpin,0);
+  delay(50);
+  arduino.servoWrite(bellpin,90);  
+}
+*/
 
 void storePot(int percentpower)  //stores the percent power for kenny's python script
 {
@@ -622,4 +683,13 @@ void storePot(int percentpower)  //stores the percent power for kenny's python s
   powerranger.println(percentpower);
   powerranger.flush();
   powerranger.close();
-} */
+}
+
+void emergencyStop(boolean stop)
+{
+  officersafety = createWriter("stop_print.txt");
+  if (stop) officersafety.println(1);
+  else officersafety.println(0);
+  officersafety.flush();
+  officersafety.close();
+}
