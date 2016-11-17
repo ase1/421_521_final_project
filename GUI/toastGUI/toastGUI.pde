@@ -9,8 +9,11 @@ import twitter4j.*;
 import twitter4j.auth.*;
 import twitter4j.api.*;
 import java.util.*;
-import processing.serial.*;  
+import processing.serial.*; 
 //import cc.arduino.*;  //make sure you import the Arduino library (Sketch > Import Library > Add Library > Arduino(Firmata))
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
 
 PFont buttonfont; 
 PFont numberfont;
@@ -21,6 +24,7 @@ PrintWriter powerranger;
 PrintWriter officersafety; 
 String imagefilepath;
 PGraphics pg;
+Robot robot;
 
 // Twitter stuff
 Twitter twitter;
@@ -135,8 +139,8 @@ int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 
 
 
 void setup() {
-  //fullScreen();
-  size(480, 800);
+  fullScreen();
+  //size(480, 800);
   //println(Arduino.list());            //get a list of the ports
   //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
   buttonfont = createFont("Gentium Basic", 24);
@@ -145,7 +149,14 @@ void setup() {
   updateImage("maneatingcarrot.jpg");   //default image, obviously
   hour = getScheduledHour();            //grab the stored time
   minute = getScheduledMinute();
-  emergencyStop(false); 
+  emergencyStop(false);
+
+  try { 
+    robot = new Robot();
+  } catch (AWTException e) {
+    e.printStackTrace();
+    exit();
+  }
 }
 
 void draw() {
@@ -341,8 +352,10 @@ void mousePressed() {
       toastmode = 3;
       println("TOAST NOW button pressed!");
       launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
+      autoLaunch(2000);
       delay(5000);  //wait for processing
       launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
+      autoLaunch(2000);
     }
     else if(laterB) 
     {
@@ -393,7 +406,8 @@ void mousePressed() {
     if(m1s1B)
     {
       println(m1sText[0] + " button pressed!");
-      exec("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
+      launch("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
+      autoLaunch(2000);
       updateImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
     }
     if(m1s2B)
@@ -694,4 +708,14 @@ void emergencyStop(boolean stop)
   else officersafety.println(0);
   officersafety.flush();
   officersafety.close();
+}
+
+void autoLaunch(int delaytime)
+{
+  delay(delaytime);
+  robot.keyPress(KeyEvent.VK_LEFT);
+  robot.keyRelease(KeyEvent.VK_LEFT);
+  delay(20);
+  robot.keyPress(KeyEvent.VK_ENTER);
+  robot.keyRelease(KeyEvent.VK_ENTER);
 }
