@@ -406,7 +406,7 @@ void mousePressed() {
     if(m1s1B)
     {
       println(m1sText[0] + " button pressed!");
-      launch("/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh");
+      launch("/home/pi/421_521_final_project/GUI/selfie/selfie.desktop");
       autoLaunch(2000);
       updateImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
     }
@@ -711,7 +711,7 @@ void emergencyStop(boolean stop)
 }
 
 void autoLaunch(int delaytime)
-{
+{/*
   delay(delaytime);
   robot.keyPress(KeyEvent.VK_ALT);
   robot.keyPress(KeyEvent.VK_TAB);
@@ -725,5 +725,5 @@ void autoLaunch(int delaytime)
   robot.keyRelease(KeyEvent.VK_LEFT);
   delay(20);
   robot.keyPress(KeyEvent.VK_ENTER);
-  robot.keyRelease(KeyEvent.VK_ENTER);
+  robot.keyRelease(KeyEvent.VK_ENTER);*/
 }

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=selfie
+Comment=Describe your script here
+Exec=/home/pi/421_521_final_project/GUI/selfie/takeselfie.sh
+Terminal=false
+Type=Application
