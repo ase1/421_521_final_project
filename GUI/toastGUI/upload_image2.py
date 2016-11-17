@@ -107,10 +107,9 @@ fo=open("gcode.gcode","wb")
 fo.write(';********Laser Toasted G CODE********** \n')
 fo.write(';**** By Kenny Groszman, Andrew Elsey ******* \n')
 fo.write(';**** Rice University, BIOE 421, Dr. Jordan Miller **** \n')
+fo.write('G28 ; motors go Home \n')
 fo.write('G90 ; Absolute Coordinates \n')
 fo.write('M3 S0 ; Laser Off \n')
-fo.write('G28 ; motors go Home \n')
-
 
 #WRITE BODY GCODE
 for i in range(len(X_new)):
@@ -121,10 +120,9 @@ for i in range(len(X_new)):
 
 
 #SHUTDOWN ROUTINE
-fo.write('G28; platforms go home \n')
-fo.write('G0 Y560 \n')
+#fo.write('G28; platforms go home \n')
 fo.write('M106 S0 ; turn laser PWM to zero \n')
-
+fo.write('G0 Y300 \n')
 
 fo.close()
 
