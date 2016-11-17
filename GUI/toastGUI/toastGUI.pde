@@ -341,6 +341,8 @@ void mousePressed() {
       toastmode = 3;
       println("TOAST NOW button pressed!");
       launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
+      delay(5000);  //wait for processing
+      launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
     }
     else if(laterB) 
     {
