@@ -142,7 +142,7 @@ boolean timereached = false;
 boolean printfinished = false;
 int power; // power level
 int startmillis = 0;
-int toasttime = 60000;  //time required for printcore to run
+int toasttime = 7000;  //time required for printcore to run
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 
@@ -226,6 +226,12 @@ void draw() {
       textFont(numberfont);
       fill(0);
       text(round((float)percent*100)+"%", (int)(0.5*display_width), (int)(0.2*display_height));
+    }
+    else if(toastLaterPressed)
+    {
+      textFont(numberfont);
+      fill(0);
+      text("Toasting at "+printtime(hour)+":"+printtime(minute), (int)(0.5*display_width), (int)(0.9*display_height)); 
     }
   }
   drawtext();
