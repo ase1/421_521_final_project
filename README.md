@@ -1,6 +1,8 @@
 # Kenny Toastman and Andrew Crusty present: [LaserToasterino](http://www.naminum.com/append?q=laser%20toaster)
 ![This is toast.](https://raw.githubusercontent.com/ase1/421_521_final_project/master/resources/20161020_162631.jpg "This is toast.")
 
+This repository contains source code, CAD files, course deliverables, and instructions to create a laser toaster using a slew of microcontrollers. This is our final project for BIOE 421 at Rice University, taught by Dr. Jordan Miller and trusty assistant Dan Sazer. 
+
 <a name="abstract">
 ### Abstract
 Technological breakthroughs in the last decade have significantly altered the way we experience our everyday lives, from smartphones, smart TV's, and even IoT products like thermostats. One aspect of our lives, though, has not seen any improvements coming from technology for many decades-- toast. The goal of this project is to thrust the breakfast experience into the 21st century. We will create a device that allows you to wake up to a perfect piece of personalized toast. Laser etching will be used to burn images, a daily agenda, an inspirational quote, or the day’s headlines right onto a piece of bread. The device can be used immediately on command, or can be scheduled to have your perfect toast ready for you, right when you wake up. The image to be printed could be a selfie (or other inferior photo) that you upload or content from the Internet, allowing for an entirely customizeable breakfast.
