@@ -1,1 +1,1 @@
-/home/pi/421_521_final_project/GUI/toastGUI/generated_image.jpg
+/home/pi/421_521_final_project/GUI/toastGUI/maneatingcarrot.jpg

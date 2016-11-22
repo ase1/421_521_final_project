@@ -34,7 +34,7 @@ print "printing...."
 p.startprint(gcode)  # PRINT YOUR CODE!!!
 
 # emergency stop implementation
-timeout = time.time() + 300  # the time to stop the print is after 3 minutes
+timeout = time.time() + 230  # the time to stop the print is after 3 minutes
 flag = "0" # this is the flag to stop the print
 
 while time.time() < timeout and flag == "0":

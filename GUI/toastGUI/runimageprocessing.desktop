@@ -4,5 +4,5 @@
 Name=runimageprocessing
 Comment=Describe your script here
 Exec=/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh
-Terminal=true
+Terminal=false
 Type=Application

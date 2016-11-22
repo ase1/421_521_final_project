@@ -142,7 +142,7 @@ boolean timereached = false;
 boolean printfinished = false;
 int power; // power level
 int startmillis = 0;
-int toasttime = 60000;  //time required for printcore to run
+int toasttime = 230000;  //time required for printcore to run
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 
@@ -438,7 +438,8 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       launch("/home/pi/421_521_final_project/GUI/toastGUI/selfie.desktop");
-    }
+      updateImage("selfie.jpg");
+  }
     if (m1s2B)
     {
       println(m1sText[1] + " button pressed!");
