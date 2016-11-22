@@ -18,6 +18,7 @@ import java.awt.event.KeyEvent;
 PFont buttonfont;
 PFont numberfont;
 PImage img;
+PImage toastimg;
 PrintWriter pathfile;
 PrintWriter timekeeper;
 PrintWriter powerranger;
@@ -135,15 +136,19 @@ int hour;  //store scheduled hour
 int minute;  // store scheduled minute
 int currenthour = 0;
 int currentminute = 0; 
+boolean isToasting = false; 
 boolean toastLaterPressed = false;
+boolean timereached = false;
+boolean printfinished = false;
 int power; // power level
-
+int startmillis = 0;
+int toasttime = 60000;  //time required for printcore to run
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 
 void setup() {
-  fullScreen();
-  //size(480, 800);
+  //fullScreen();
+  size(480, 800);
   //println(Arduino.list());            //get a list of the ports
   //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
   buttonfont = createFont("Gentium Basic", 24);
@@ -209,15 +214,44 @@ void draw() {
   {
     fill(settingcolor[0], settingcolor[1], settingcolor[2]);
     rect(cancelX, cancelY, cancelL, cancelL, 0);
+    if(!toastLaterPressed || (toastLaterPressed && timereached))
+    {
+      //println(millis()-startmillis);
+      double percent = getPercentComplete(toasttime);
+      noStroke();
+      fill(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
+      rect(imageX, imageY+(int)(imageL*(percent)), imageL, (int)(imageL*(1-percent)), 0);
+      toastimg = loadImage("toasticon.png");
+      image(toastimg,imageX-50, imageY-50, imageL+100, imageL+100);
+      textFont(numberfont);
+      fill(0);
+      text(round((float)percent*100)+"%", (int)(0.5*display_width), (int)(0.2*display_height));
+    }
   }
   drawtext();
-  if (toastLaterPressed)
+  
+  // start the toast timer
+  if (isToasting)
   {
-    if (isTime(hour, minute))
+    if (toastLaterPressed && !printfinished)  //activates if toast later button was pressed
+    {
+      if (isTime(hour, minute) && !timereached) 
+      {
+        startmillis = millis();
+        timereached = true;
+      }
+      if (timereached)
+      {
+        startToasting();
+      }
+    }
+    else if (!printfinished)  //only activates if toast now button was pressed
     {
       startToasting();
     }
-  }
+    else isToasting=false;  //should never come to this, but if something screws up, this will get it out of the loop
+  }  
+  
 }
 
 void drawtext()
@@ -333,11 +367,13 @@ void mousePressed() {
       toastmode = 1;
       println("Toast from image button pressed!");
       emergencyStop(false);  //turns off emergency stop, if it's on
+      printfinished = false;
     } else if (mode2B) 
     {
       toastmode = 2;
       println("Toast from data button pressed!");
       emergencyStop(false);  //turns off emergency stop, if it's on
+      printfinished = false;
     }
   }
   if (toastmode == 1 || toastmode == 2)  //only able to interact with these buttons when they exist
@@ -346,11 +382,13 @@ void mousePressed() {
     {
       toastmode = 3;
       println("TOAST NOW button pressed!");
-      startToasting();
+      startmillis = millis();
+      isToasting = true;
     } else if (laterB) 
     {
       toastmode = 3;
       println("TOAST LATER button pressed!");
+      isToasting = true;
       toastLaterPressed = true;
     } else if (adjustHUB)
     {
@@ -706,18 +744,51 @@ boolean isTime(int h, int m)
   else return false;
 }
 
+boolean imageprocessed = false;
+boolean printcorestarted = false;
 void startToasting()
 {
-  while (!isEmergencyStopped())
+  if (!isEmergencyStopped())
   {
-    println("BEGIN TOASTING SEQUENCE");
-    println("IMAGE PROCESSING INITIALIZED");
-    launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
-    delay(5000);  //wait for processing
-    println("IMAGE PROCESSING COMPLETE, LAUNCHING PRINTCORE");
-    launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
-    toastLaterPressed = false;
-    delay(600000);  //wait 5 minutes for toasting
-    toastmode=0;
+    if (!imageprocessed)
+    {
+      //println("BEGIN TOASTING SEQUENCE");
+      //println("IMAGE PROCESSING INITIALIZED");
+      //launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh"); 
+      imageprocessed = true;
+    }
+    else if((millis() > startmillis+5000) && imageprocessed && !printcorestarted)
+    {
+    //println("IMAGE PROCESSING COMPLETE, LAUNCHING PRINTCORE");
+    //launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
+    printcorestarted = true;
+    }
+    
+    else if((millis() > startmillis+toasttime) && imageprocessed && printcorestarted)  //reset stuff after time
+    {
+      toastLaterPressed = false;
+      timereached = false; 
+      imageprocessed = false; 
+      printcorestarted = false;
+      printfinished = true;
+      isToasting = false;
+      toastmode=0;
+    }
   }
+  else
+  {
+      toastLaterPressed = false;
+      timereached = false; 
+      imageprocessed = false; 
+      printcorestarted = false;
+      printfinished = true;
+      isToasting = false;
+      toastmode=0;
+  }
+}
+
+double getPercentComplete(int numMillis)
+{
+  if (millis()-startmillis > numMillis) return 1;
+  else return (double)(millis()-startmillis)/numMillis;
 }
