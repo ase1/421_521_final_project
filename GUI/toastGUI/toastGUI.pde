@@ -437,7 +437,7 @@ void mousePressed() {
     if (m1s1B)
     {
       println(m1sText[0] + " button pressed!");
-      launch("/home/pi/421_521_final_project/GUI/selfie/selfie.desktop");
+      launch("/home/pi/421_521_final_project/GUI/toastGUI/selfie.desktop");
     }
     if (m1s2B)
     {
