@@ -1,7 +1,7 @@
 /*  GUI for the Toaster Printer
-*   Andrew Elsey, Kenny Groszman
-*   To run on the Raspberry Pi Display
-*/
+ *   Andrew Elsey, Kenny Groszman
+ *   To run on the Raspberry Pi Display
+ */
 
 import java.io.PrintWriter;
 import twitter4j.conf.*;
@@ -36,11 +36,11 @@ String myQuery;
 
 // Arduino stuff
 /*Arduino arduino;
-int potpin = 0;
-int doorpin = 8;
-int bellpin = 9; 
-int stoppin = 10; 
-*/
+ int potpin = 0;
+ int doorpin = 8;
+ int bellpin = 9; 
+ int stoppin = 10; 
+ */
 
 // VARIABLES
 // Display size  
@@ -50,7 +50,7 @@ int[] backgroundcolor = {255, 204, 204};
 int cornerrad = 15; //corner radius of the buttons
 
 // Mode Buttons
-int[] modecolor = {91,155,213};
+int[] modecolor = {91, 155, 213};
 int modeX1 = (int)(0.05*display_width);
 int modeX2 = (int)(0.55*display_width);
 int modeL  = (int)(0.40*display_width);
@@ -63,13 +63,13 @@ int imageY = (int)(0.34*display_height);
 int imageL = (int)(0.80*display_width);
 
 // Toast Now Button
-int[] nowcolor = {112,173,71};
+int[] nowcolor = {112, 173, 71};
 int nowX = (int)(0.15*display_width);
 int nowY = (int)(0.91*display_height);
 int nowL = (int)(0.20*display_width);
 
 // Toast Later Button
-int[] latercolor = {255,192,0};
+int[] latercolor = {255, 192, 0};
 int laterX = (int)(0.40*display_width);
 int laterY = nowY;
 int laterL = nowL;
@@ -97,7 +97,7 @@ int cancelY = (int)(0.05*display_width);
 int cancelL = (int)(0.15*display_width);
 
 // Mode 1 Setting Buttons
-int[] settingcolor = {240,90,75};  //fix this eventually
+int[] settingcolor = {240, 90, 75};  //fix this eventually
 int m1sX = modeX1;
 int m1sL  = (int)(0.90*display_width);
 int m1sY1  = (int)(0.16*display_height);
@@ -133,6 +133,9 @@ boolean m2s4B = false;
 boolean cancelB = false;
 int hour;  //store scheduled hour
 int minute;  // store scheduled minute
+int currenthour = 0;
+int currentminute = 0; 
+boolean toastLaterPressed = false;
 int power; // power level
 
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
@@ -153,15 +156,16 @@ void setup() {
 
   try { 
     robot = new Robot();
-  } catch (AWTException e) {
+  } 
+  catch (AWTException e) {
     e.printStackTrace();
     exit();
   }
 }
 
 void draw() {
-  checkButtons(mouseX,mouseY);
-  //arduinoLoop();
+  checkButtons(mouseX, mouseY);
+  //arduinoLoop(arduino);  //does all the arduino monitoring
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
   if (toastmode !=3)
@@ -170,19 +174,19 @@ void draw() {
     rect(modeX1, modeY, modeL, modeH, cornerrad);
     rect(modeX2, modeY, modeL, modeH, cornerrad);
   }
-  
-  if (toastmode != 0){
+
+  if (toastmode != 0) {
     String[] filepatharray= loadStrings("image_path.txt");
     imagefilepath = filepatharray[0];
     img = loadImage(imagefilepath);
     image(img, imageX, imageY, imageL, imageL);
   }
-  
+
   if (toastmode == 1 || toastmode == 2)
   {
     fill(nowcolor[0], nowcolor[1], nowcolor[2]);
     ellipse(nowX, nowY, nowL, nowL);
-  
+
     fill(latercolor[0], latercolor[1], latercolor[2]);
     ellipse(laterX, laterY, laterL, laterL);
     rect(timeX, timeY, timeL, timeH, cornerrad);
@@ -207,6 +211,13 @@ void draw() {
     rect(cancelX, cancelY, cancelL, cancelL, 0);
   }
   drawtext();
+  if (toastLaterPressed)
+  {
+    if (isTime(hour, minute))
+    {
+      startToasting();
+    }
+  }
 }
 
 void drawtext()
@@ -216,101 +227,86 @@ void drawtext()
   fill(255);
   if (toastmode != 3)
   {
-    text("Toast from image...",(int)(modeX1+modeL/2),(int)(modeY+modeH/2+8));
-    text("Toast from data",(int)(modeX2+modeL/2),(int)(modeY+modeH/2+8));
+    text("Toast from image...", (int)(modeX1+modeL/2), (int)(modeY+modeH/2+8));
+    text("Toast from data", (int)(modeX2+modeL/2), (int)(modeY+modeH/2+8));
     if (toastmode != 0)
     {
-      text("TOAST\nNOW",nowX,nowY-5);
-      text("TOAST\nAT:",laterX,laterY-5);
-      
+      text("TOAST\nNOW", nowX, nowY-5);
+      text("TOAST\nAT:", laterX, laterY-5);
+
       textFont(numberfont);
-      text(printtime(hour), adjustX1+adjustL/2,adjustY1+adjustH+14);
-      text(printtime(minute), adjustX2+adjustL/2,adjustY1+adjustH+14);
+      text(printtime(hour), adjustX1+adjustL/2, adjustY1+adjustH+14);
+      text(printtime(minute), adjustX2+adjustL/2, adjustY1+adjustH+14);
     }
   }
   textFont(buttonfont);
   if (toastmode == 1)
   {
-    text(m1sText[0],(int)(display_width/2),m1sY1+m1sH/2+6);
-    text(m1sText[1],(int)(display_width/2),m1sY2+m1sH/2+6);
+    text(m1sText[0], (int)(display_width/2), m1sY1+m1sH/2+6);
+    text(m1sText[1], (int)(display_width/2), m1sY2+m1sH/2+6);
   }
   if (toastmode == 2)
   {
-    text(m2sText[0],m2sX1+m2sL/2,m2sY1+m1sH/2+6);
-    text(m2sText[1],m2sX2+m2sL/2,m2sY1+m1sH/2+6);
-    text(m2sText[2],m2sX1+m2sL/2,m2sY2+m1sH/2+6);
-    text(m2sText[3],m2sX2+m2sL/2,m2sY2+m1sH/2+6);
+    text(m2sText[0], m2sX1+m2sL/2, m2sY1+m1sH/2+6);
+    text(m2sText[1], m2sX2+m2sL/2, m2sY1+m1sH/2+6);
+    text(m2sText[2], m2sX1+m2sL/2, m2sY2+m1sH/2+6);
+    text(m2sText[3], m2sX2+m2sL/2, m2sY2+m1sH/2+6);
   }
   if (toastmode == 3)
   {
     textFont(numberfont);
-    text("X",cancelX+cancelL/2,cancelY+cancelL/2+12);
+    text("X", cancelX+cancelL/2, cancelY+cancelL/2+12);
     textFont(buttonfont);
   }
 }
 
 void checkButtons(int x, int y) {
-  if (overRect(modeX1,modeY,modeL,modeH)) 
+  if (overRect(modeX1, modeY, modeL, modeH)) 
   {
     mode1B = true;
-  }
-  else if (overRect(modeX2,modeY,modeL,modeH) && toastmode != 3) 
+  } else if (overRect(modeX2, modeY, modeL, modeH) && toastmode != 3) 
   {
     mode2B = true;
-  }
-  else if (overCircle(nowX,nowY,nowL))
+  } else if (overCircle(nowX, nowY, nowL))
   {
     nowB = true;
-  }
-  else if (overCircle(laterX,laterY,laterL))
+  } else if (overCircle(laterX, laterY, laterL))
   {
     laterB = true;
-  }
-  else if (overRect(adjustX1,adjustY1,adjustL,adjustH)) 
+  } else if (overRect(adjustX1, adjustY1, adjustL, adjustH)) 
   {
     adjustHUB = true;
-  }
-  else if (overRect(adjustX1,adjustY2,adjustL,adjustH)) 
+  } else if (overRect(adjustX1, adjustY2, adjustL, adjustH)) 
   {
     adjustHDB = true;
-  }
-  else if (overRect(adjustX2,adjustY1,adjustL,adjustH)) 
+  } else if (overRect(adjustX2, adjustY1, adjustL, adjustH)) 
   {
     adjustMUB = true;
-  }
-  else if (overRect(adjustX2,adjustY2,adjustL,adjustH)) 
+  } else if (overRect(adjustX2, adjustY2, adjustL, adjustH)) 
   {
     adjustMDB = true;
-  }
-  else if (overRect(m1sX,m1sY1,m1sL,m1sH) && toastmode == 1)
+  } else if (overRect(m1sX, m1sY1, m1sL, m1sH) && toastmode == 1)
   {
     m1s1B = true;
-  }
-  else if (overRect(m1sX,m1sY2,m1sL,m1sH) && toastmode == 1)
+  } else if (overRect(m1sX, m1sY2, m1sL, m1sH) && toastmode == 1)
   {
     m1s2B = true;
-  }
-  else if (overRect(m2sX1,m2sY1,m2sL,m2sH) && toastmode == 2)
+  } else if (overRect(m2sX1, m2sY1, m2sL, m2sH) && toastmode == 2)
   {
     m2s1B = true;
-  }
-  else if (overRect(m2sX2,m2sY1,m2sL,m2sH) && toastmode == 2)
+  } else if (overRect(m2sX2, m2sY1, m2sL, m2sH) && toastmode == 2)
   {
     m2s2B = true;
-  }
-  else if (overRect(m2sX1,m2sY2,m2sL,m2sH) && toastmode == 2)
+  } else if (overRect(m2sX1, m2sY2, m2sL, m2sH) && toastmode == 2)
   {
     m2s3B = true;
-  }
-  else if (overRect(m2sX2,m2sY2,m2sL,m2sH) && toastmode == 2)
+  } else if (overRect(m2sX2, m2sY2, m2sL, m2sH) && toastmode == 2)
   {
     m2s4B = true;
-  }
-  else if(overRect(cancelX,cancelY,cancelL,cancelL) && toastmode==3)
+  } else if (overRect(cancelX, cancelY, cancelL, cancelL) && toastmode==3)
   {
     cancelB = true;
-  }
-  else {
+  } else {
     mode1B = false;
     mode2B = false; 
     nowB = false;
@@ -332,13 +328,12 @@ void checkButtons(int x, int y) {
 void mousePressed() {
   if (toastmode != 3)
   {
-    if(mode1B)
+    if (mode1B)
     {
       toastmode = 1;
       println("Toast from image button pressed!");
       emergencyStop(false);  //turns off emergency stop, if it's on
-    }
-    else if(mode2B) 
+    } else if (mode2B) 
     {
       toastmode = 2;
       println("Toast from data button pressed!");
@@ -347,35 +342,28 @@ void mousePressed() {
   }
   if (toastmode == 1 || toastmode == 2)  //only able to interact with these buttons when they exist
   {
-    if(nowB)
+    if (nowB)
     {
       toastmode = 3;
       println("TOAST NOW button pressed!");
-      launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
-      autoLaunch(2000);
-      delay(5000);  //wait for processing
-      launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
-      autoLaunch(2000);
-    }
-    else if(laterB) 
+      startToasting();
+    } else if (laterB) 
     {
       toastmode = 3;
       println("TOAST LATER button pressed!");
-    }
-    else if(adjustHUB)
+      toastLaterPressed = true;
+    } else if (adjustHUB)
     {
       hour++;
       if (hour>23) hour=0;
       println("Hour up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
-    }
-    else if(adjustHDB)
+    } else if (adjustHDB)
     {
       hour--;
-      if(hour<0) hour=23;
+      if (hour<0) hour=23;
       println("Hour down button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
       //updateTime(hour,minute);
-    }
-    else if(adjustMUB)
+    } else if (adjustMUB)
     {
       minute++;  
       if (minute>59)
@@ -386,8 +374,7 @@ void mousePressed() {
       }
       println("Minute up button pressed! Current time: " + printtime(hour) + ":" + printtime(minute));
       //updateTime(hour,minute);
-    }
-    else if(adjustMDB)
+    } else if (adjustMDB)
     {
       minute--;
       if (minute<0)
@@ -400,54 +387,53 @@ void mousePressed() {
       //updateTime(hour,minute);
     }
   }
-  
-  if(toastmode == 1)
+
+  if (toastmode == 1)
   {
-    if(m1s1B)
+    if (m1s1B)
     {
       println(m1sText[0] + " button pressed!");
       launch("/home/pi/421_521_final_project/GUI/selfie/selfie.desktop");
-      autoLaunch(2000);
       updateImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
     }
-    if(m1s2B)
+    if (m1s2B)
     {
       println(m1sText[1] + " button pressed!");
       selectInput("Select a file to process:", "fileSelected");
       redraw();
     }
   }
-  
-  if(toastmode == 2)
+
+  if (toastmode == 2)
   {
-    if(m2s1B)
+    if (m2s1B)
     {
       println(m2sText[0] + " button pressed!");  // news
       myQuery = "from:wsj";  //grab news headlines from the Wall Street Journal twitter
-      println(getATweet(myQuery,false));
-      updateImage(textToImage(getATweet(myQuery,false)));
+      println(getATweet(myQuery, false));
+      updateImage(textToImage(getATweet(myQuery, false)));
     }
-    if(m2s2B)
+    if (m2s2B)
     {
       println(m2sText[1] + " button pressed!");  // weather
       //exec(getWeather.sh);
     }
-    if(m2s3B)
+    if (m2s3B)
     {
       println(m2sText[2] + " button pressed!");  // quote
       myQuery = "from:Inspire_Us";  //grab quotes from a twitter bot
-      println(getATweet(myQuery,true));
-      updateImage(textToImage(getATweet(myQuery,true)));
+      println(getATweet(myQuery, true));
+      updateImage(textToImage(getATweet(myQuery, true)));
     }
-    if(m2s4B)
+    if (m2s4B)
     {
       println(m2sText[3] + " button pressed!");  // tweet
       myQuery = "toaster";  //grab tweets containing the word "toaster"
-      println(getATweet(myQuery,true));
-      updateImage(textToImage(getATweet(myQuery,true)));
+      println(getATweet(myQuery, true));
+      updateImage(textToImage(getATweet(myQuery, true)));
     }
   }
-  
+
   if (toastmode ==3)
   {
     if (cancelB)
@@ -457,17 +443,17 @@ void mousePressed() {
       emergencyStop(true);
     }
   }
-  
-  if(getScheduledHour() != hour || getScheduledMinute() != minute)
+
+  if (getScheduledHour() != hour || getScheduledMinute() != minute)
   {
     updateTime(hour, minute);
   }
 }
 
 // Sense if the mouse is over a button, from Button example code
-boolean overRect(int x, int y, int width, int height)  {
+boolean overRect(int x, int y, int width, int height) {
   if (mouseX >= x && mouseX <= x+width && 
-      mouseY >= y && mouseY <= y+height) {
+    mouseY >= y && mouseY <= y+height) {
     return true;
   } else {
     return false;
@@ -537,35 +523,33 @@ String getATweet(String query, boolean isFiltered)
   thread("refreshTweets");
   tweetIsGood = false;
   tweetnum=0;
-  while(!tweetIsGood)
+  while (!tweetIsGood)
   {
     Status status = tweets.get(tweetnum);  //get latest tweet
     myTweet = status.getText();  // the content from the tweet
-    if(isFiltered && (myTweet.indexOf("http")!=-1 || myTweet.indexOf("RT")!=-1 ))  //filters bad tweets out
+    if (isFiltered && (myTweet.indexOf("http")!=-1 || myTweet.indexOf("RT")!=-1 ))  //filters bad tweets out
     {
       tweetnum++;
-      //println("bad tweet: " + myTweet);
-    }
-    else tweetIsGood = true;
+    } else tweetIsGood = true;
   }
-  if(!isFiltered && myTweet.indexOf("http")!=-1 )
+  if (!isFiltered && myTweet.indexOf("http")!=-1 )
   {
-    myTweet = myTweet.substring(0,myTweet.indexOf("http"));
+    myTweet = myTweet.substring(0, myTweet.indexOf("http"));
   }
   return myTweet;
 }
 
 String textToImage(String text)
 {
-  pg=createGraphics(500,500);
+  pg=createGraphics(500, 500);
   pg.beginDraw();
   pg.background(255);
   int fontsize = 60;
-  PFont imageFont = createFont("Gentium Basic",fontsize);
+  PFont imageFont = createFont("Gentium Basic", fontsize);
   pg.textFont(imageFont);
   pg.textAlign(CENTER);
-  pg.fill(255,0,0);
-  pg.text(wrapText(text,fontsize),250,100);
+  pg.fill(255, 0, 0);
+  pg.text(wrapText(text, fontsize), 250, 100);
   pg.save("generated_image.jpg");
   return "generated_image.jpg";
 }
@@ -574,14 +558,14 @@ String wrapText(String text, int fontsize)
 {
   int charsPerLine = fontsize/3;
   int index = 0;
-  while(index < text.length()-charsPerLine)
+  while (index < text.length()-charsPerLine)
   {
-     index = index+charsPerLine;
-     while(text.charAt(index)!=' ' && index != 0)
-     {
-        index--;       
-     }
-     text = text.substring(0,index) + "\n" + text.substring(index,text.length());
+    index = index+charsPerLine;
+    while (text.charAt(index)!=' ' && index != 0)
+    {
+      index--;
+    }
+    text = text.substring(0, index) + "\n" + text.substring(index, text.length());
   }
   return text;
 }
@@ -591,15 +575,15 @@ int wrapCountNumLines(String text)
   int charsPerLine = 20;
   int index = 0;
   int count=0;
-  while(index < text.length()-charsPerLine)
+  while (index < text.length()-charsPerLine)
   {
-     index = index+charsPerLine;
-     while(text.charAt(index)!=' ' && index != 0)
-     {
-        index--;       
-     }
-     text = text.substring(0,index) + "\n" + text.substring(index,text.length());
-     count++;
+    index = index+charsPerLine;
+    while (text.charAt(index)!=' ' && index != 0)
+    {
+      index--;
+    }
+    text = text.substring(0, index) + "\n" + text.substring(index, text.length());
+    count++;
   }
   return count;
 }
@@ -623,75 +607,75 @@ void updateTime(int h, int m)
 int getScheduledHour()
 {
   String[] timearray= loadStrings("scheduledtime.txt");
-  return Integer.parseInt(timearray[0].substring(0,timearray[0].indexOf(":")));
+  return Integer.parseInt(timearray[0].substring(0, timearray[0].indexOf(":")));
 }
 
 int getScheduledMinute()
 {
   String[] timearray= loadStrings("scheduledtime.txt");
-  return Integer.parseInt(timearray[0].substring(timearray[0].indexOf(":")+1,timearray[0].length()));
+  return Integer.parseInt(timearray[0].substring(timearray[0].indexOf(":")+1, timearray[0].length()));
 }
 
 /*
 void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
-{
-  readStop(arduino)
-  power = readPot(arduino);
-  
-}
-
-int readPot(Arduino arduino)  //reads the value of the potentiometer
-{
-  arduino.pinMode(potpin,Arduino.INPUT);
-  power = arduino.analogRead(potpin);
-  int percentpower = (int)((double)power/10.23);
-  return percentpower;
-}
-
-void readStop(Arduino arduino)
-{
-  arduino.pinMode(stoppin, Arduino.INPUT);
-  if(arduino.digitalRead(stoppin)==Arduino.HIGH) emergencyStop(true);
-}
-
-void openDoor(Arduino arduino)
-{
-  int dooropen = 180; 
-  int doorclosed = 0;
-  int speed = 10;  //step rate of servo
-  arduino.pinMode(doorpin,arduino.SERVO);
-  int j = 0;
-  while(j < dooropen)
-  {
-    arduino.servoWrite(doorpin,j);
-    delay(10);
-    j = j+speed;
-  }
-}
-
-void closeDoor(Arduino arduino)
-{
-  int dooropen = 180; 
-  int doorclosed = 0;
-  int speed = 10;  //step rate of servo
-  arduino.pinMode(doorpin,arduino.SERVO);
-  int j = 180;
-  while(j > doorclosed)
-  {
-    arduino.servoWrite(doorpin,j);
-    delay(10);
-    j = j-speed;
-  }
-}
-
-void ringBell(Arduino arduino)
-{
-  arduino.pinMode(bellpin,arduino.SERVO);
-  arduino.servoWrite(bellpin,0);
-  delay(50);
-  arduino.servoWrite(bellpin,90);  
-}
-*/
+ {
+ readStop(arduino)
+ power = readPot(arduino);
+ 
+ }
+ 
+ int readPot(Arduino arduino)  //reads the value of the potentiometer
+ {
+ arduino.pinMode(potpin,Arduino.INPUT);
+ power = arduino.analogRead(potpin);
+ int percentpower = (int)((double)power/10.23);
+ return percentpower;
+ }
+ 
+ void readStop(Arduino arduino)
+ {
+ arduino.pinMode(stoppin, Arduino.INPUT);
+ if(arduino.digitalRead(stoppin)==Arduino.HIGH) emergencyStop(true);
+ }
+ 
+ void openDoor(Arduino arduino)
+ {
+ int dooropen = 180; 
+ int doorclosed = 0;
+ int speed = 10;  //step rate of servo
+ arduino.pinMode(doorpin,arduino.SERVO);
+ int j = 0;
+ while(j < dooropen)
+ {
+ arduino.servoWrite(doorpin,j);
+ delay(10);
+ j = j+speed;
+ }
+ }
+ 
+ void closeDoor(Arduino arduino)
+ {
+ int dooropen = 180; 
+ int doorclosed = 0;
+ int speed = 10;  //step rate of servo
+ arduino.pinMode(doorpin,arduino.SERVO);
+ int j = 180;
+ while(j > doorclosed)
+ {
+ arduino.servoWrite(doorpin,j);
+ delay(10);
+ j = j-speed;
+ }
+ }
+ 
+ void ringBell(Arduino arduino)
+ {
+ arduino.pinMode(bellpin,arduino.SERVO);
+ arduino.servoWrite(bellpin,0);
+ delay(50);
+ arduino.servoWrite(bellpin,90);  
+ }
+ */
 
 void storePot(int percentpower)  //stores the percent power for kenny's python script
 {
@@ -710,20 +694,30 @@ void emergencyStop(boolean stop)
   officersafety.close();
 }
 
-void autoLaunch(int delaytime)
-{/*
-  delay(delaytime);
-  robot.keyPress(KeyEvent.VK_ALT);
-  robot.keyPress(KeyEvent.VK_TAB);
-  robot.keyPress(KeyEvent.VK_ENTER);
-  delay(30);
-  robot.keyRelease(KeyEvent.VK_ENTER);
-  robot.keyRelease(KeyEvent.VK_TAB);
-  robot.keyRelease(KeyEvent.VK_ALT);
-  delay(30);
-  robot.keyPress(KeyEvent.VK_LEFT);
-  robot.keyRelease(KeyEvent.VK_LEFT);
-  delay(20);
-  robot.keyPress(KeyEvent.VK_ENTER);
-  robot.keyRelease(KeyEvent.VK_ENTER);*/
+boolean isEmergencyStopped()
+{
+  String[] stoparray= loadStrings("stop_print.txt");
+  return (Integer.parseInt(stoparray[0])==1);  //checks if the printer needs to stop
+}
+
+boolean isTime(int h, int m)
+{
+  if (h==hour() && m==minute()) return true;
+  else return false;
+}
+
+void startToasting()
+{
+  while (!isEmergencyStopped())
+  {
+    println("BEGIN TOASTING SEQUENCE");
+    println("IMAGE PROCESSING INITIALIZED");
+    launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh");
+    delay(5000);  //wait for processing
+    println("IMAGE PROCESSING COMPLETE, LAUNCHING PRINTCORE");
+    launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
+    toastLaterPressed = false;
+    delay(600000);  //wait 5 minutes for toasting
+    toastmode=0;
+  }
 }
