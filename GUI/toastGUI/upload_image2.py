@@ -1,5 +1,5 @@
-import Tkinter as tk
-import tkFileDialog as filedialog
+#import Tkinter as tk
+#import tkFileDialog as filedialog
 from PIL import Image
 import matplotlib.cm
 import numpy as np
@@ -24,7 +24,7 @@ def normalize(image): # normalize image intensities to a value between zero and 
     return image/max
 
 
-imagename = "image_path.txt"
+imagename = "/home/pi/421_521_final_project/GUI/toastGUI/image_path.txt"
 
 with open(imagename) as f:
     file_path = f.read().replace('\n','')
@@ -101,19 +101,19 @@ P_new = np.floor(P_new)
 
 print "Generating G Code........."
 
-fo=open("gcode.gcode","wb")
+fo=open("/home/pi/421_521_final_project/GUI/toastGUI/gcode.gcode","wb")
 
 #need to add header and opening G CODE
 fo.write(';********Laser Toasted G CODE********** \n')
 fo.write(';**** By Kenny Groszman, Andrew Elsey ******* \n')
 fo.write(';**** Rice University, BIOE 421, Dr. Jordan Miller **** \n')
-fo.write('G28 ; motors go Home \n')
-fo.write('G90 ; Absolute Coordinates \n')
 fo.write('M3 S0 ; Laser Off \n')
+fo.write('G90 ; Absolute Coordinates \n')
+fo.write('G28 ; motors go Home \n')
 
 #WRITE BODY GCODE
 for i in range(len(X_new)):
-    str = 'G0'+' X'+repr(X_new[i])+' Y'+repr(Y_new[i]) + ' F6000\n'
+    str = 'G0'+' X'+repr(X_new[i])+' Y'+repr(Y_new[i]) + ' F12000\n'
     fo.write(str)
     str = 'M106' + ' S' + repr(P_new[i]) + '\n'
     fo.write(str)

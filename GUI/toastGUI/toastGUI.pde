@@ -36,12 +36,12 @@ boolean tweetIsGood;
 String myQuery;
 
 // Arduino stuff
-/*Arduino arduino;
+Arduino arduino;
  int potpin = 0;
  int doorpin = 8;
  int bellpin = 9; 
  int stoppin = 10; 
- */
+ 
 
 // VARIABLES
 // Display size  
@@ -142,13 +142,13 @@ boolean timereached = false;
 boolean printfinished = false;
 int power; // power level
 int startmillis = 0;
-int toasttime = 7000;  //time required for printcore to run
+int toasttime = 60000;  //time required for printcore to run
 int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 2 = toast from data, 3 = toasting animation
 
 
 void setup() {
-  //fullScreen();
-  size(480, 800);
+  fullScreen();
+  //size(480, 800);
   //println(Arduino.list());            //get a list of the ports
   //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
   buttonfont = createFont("Gentium Basic", 24);
@@ -438,7 +438,6 @@ void mousePressed() {
     {
       println(m1sText[0] + " button pressed!");
       launch("/home/pi/421_521_final_project/GUI/selfie/selfie.desktop");
-      updateImage("/home/pi/421_521_final_project/GUI/selfie/selfie.jpg");
     }
     if (m1s2B)
     {
@@ -635,7 +634,7 @@ int wrapCountNumLines(String text)
 void updateImage(String filepath)
 {
   pathfile = createWriter("image_path.txt");
-  pathfile.println(filepath);
+  pathfile.println("/home/pi/421_521_final_project/GUI/toastGUI/"+filepath);
   pathfile.flush();
   pathfile.close();
 }
@@ -758,15 +757,15 @@ void startToasting()
   {
     if (!imageprocessed)
     {
-      //println("BEGIN TOASTING SEQUENCE");
-      //println("IMAGE PROCESSING INITIALIZED");
-      //launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.sh"); 
+      println("BEGIN TOASTING SEQUENCE");
+      println("IMAGE PROCESSING INITIALIZED");
+      launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.desktop"); 
       imageprocessed = true;
     }
     else if((millis() > startmillis+5000) && imageprocessed && !printcorestarted)
     {
-    //println("IMAGE PROCESSING COMPLETE, LAUNCHING PRINTCORE");
-    //launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.sh");
+    println("IMAGE PROCESSING COMPLETE, LAUNCHING PRINTCORE");
+    launch("/home/pi/421_521_final_project/GUI/toastGUI/run_printcore_open.desktop");
     printcorestarted = true;
     }
     

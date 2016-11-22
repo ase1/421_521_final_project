@@ -9,16 +9,21 @@ import time
 
 
 # write stop_print file with 0 in it.... this will turn into a 1 if the user says to stop printing
-filename = "stop_print.txt"
+filename = "/home/pi/421_521_final_project/GUI/toastGUI/stop_print.txt"
 fo=open(filename,"wb")  # file that will tell print to stop if needed
 fo.write('0')
 fo.close()
 
 p = printcore('/dev/ttyACM0',250000)
+p.send_now('G28')
+p.disconnect()
+#p.kill()
+
+p = printcore('/dev/ttyACM0',250000)
 
 print "you are connected"
 
-gcode = [i.strip() for i in open('gcode.gcode')]
+gcode = [i.strip() for i in open('/home/pi/421_521_final_project/GUI/toastGUI/gcode.gcode')]
 
 gcode = gcoder.LightGCode(gcode)
 
@@ -29,7 +34,7 @@ print "printing...."
 p.startprint(gcode)  # PRINT YOUR CODE!!!
 
 # emergency stop implementation
-timeout = time.time() + 180  # the time to stop the print is after 3 minutes
+timeout = time.time() + 300  # the time to stop the print is after 3 minutes
 flag = "0" # this is the flag to stop the print
 
 while time.time() < timeout and flag == "0":
@@ -41,12 +46,17 @@ while time.time() < timeout and flag == "0":
 
     if flag != "0":  # if emergency stop has been enabled, cancel the print
         p.cancelprint()
+	p.send_now('M106 S0')
+	p.send_now('G0 X0 Y300') 
         print "you have canceled your toasting job!"
 
 if time.time() > timeout:
     print "your toast is complete!"
 
+time.sleep(10)
+
 p.disconnect()
+p.kill()
 
 
 
