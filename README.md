@@ -38,6 +38,7 @@ The GUI forces the user to follow the steps on the flowchart above, first prompt
 Each button press runs a bunch of scripts. We're using the launch() function in Processing, and launching .desktop files that run bash scripts that either run terminal functions or Python scripts. It's a really roundabout way of doing things, but it's the way we've been able to make Processing work for us. Variables for other scripts (like the image path, scheduled time, or status of the emergency stop button) are stored in dedicated text files. We chose to use Processing for the GUI environment because we want to integrate Arduino StandardFirmata and also want to make an attractive layout for the touchscreen. 
 
 Once a user is ready to make his toast, he initiates a printing sequence by selecting the "Toast Now" button on the GUI. This actuates a series of steps that lead to printing, all executed in Python:
+
 1. *Image Processing:*
   * Image resized to 128 x 128 pixels, which are the dimensions of the print (these numbers could change based on testing)
   * Image recolored to grayscale with lighter colors corresponding to darker pixels
@@ -45,11 +46,13 @@ Once a user is ready to make his toast, he initiates a printing sequence by sele
     * RGB values are converted to grayscale using a weighted average formula: I = .299*[R] + .587*[G] + .114*[B]
   * Grayscale values are scaled to a power level 0-255, corresponding to the PWM range of the RAMBo Fan MOSFET output
     * Scaling is also based on the user's deisred toast power level (provided through the potentionmeter knob and Arduino)
+    
 2. *Automatic G-Code Generation:*
   * Based on the printer's print-area coordinates, the code generates a path for the laser head that covers each pixel in the image
   * At each pixel, the laser intensity changes corresponding to the intensity at that pixel
   * At the end of the print, the platform returns the toast to the user.
   * The G-Code is generated and saved as a .gcode file 
+  
 3. *Communicating with the Printer:*
   * We use Printcore, a software developed by Printrun (same group that makes Pronterface, Pronsole), to communicate with our RAMBo board.
     * Printcore is developed in Python and includes a module of commands that allow a user to interact with a printer
