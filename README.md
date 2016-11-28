@@ -43,7 +43,7 @@ Once a user is ready to make his toast, he initiates a printing sequence by sele
   * Image resized to 128 x 128 pixels, which are the dimensions of the print (these numbers could change based on testing)
   * Image recolored to grayscale with lighter colors corresponding to darker pixels
     * This is so that lighter images will be more toasted
-    * RGB values are converted to grayscale using a weighted average formula: I = .299*[R] + .587*[G] + .114*[B]
+    * RGB values are converted to grayscale using a weighted average formula: I = .299[R] + .587[G] + .114[B]
   * Grayscale values are scaled to a power level 0-255, corresponding to the PWM range of the RAMBo Fan MOSFET output
     * Scaling is also based on the user's deisred toast power level (provided through the potentionmeter knob and Arduino)
     
@@ -56,8 +56,8 @@ Once a user is ready to make his toast, he initiates a printing sequence by sele
 3. *Communicating with the Printer:*
   * We use Printcore, a software developed by Printrun (same group that makes Pronterface, Pronsole), to communicate with our RAMBo board.
     * Printcore is developed in Python and includes a module of commands that allow a user to interact with a printer
-  * Here, we send the G Code to the printer for printing
-  * For safety, we also added the capability for a user to cancel the print mid-print, using the "X" button in the GUI    
+  * Connect with the printer through Serial Port, send over the G Code, and initiate print.
+  * For safety, we also added the capability for a user to cancel the print mid-print, using the red "X" button in the GUI    
 
 <a name="hardware">
 ### Hardware Approach
