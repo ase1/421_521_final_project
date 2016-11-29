@@ -10,7 +10,7 @@ import twitter4j.auth.*;
 import twitter4j.api.*;
 import java.util.*;
 import processing.serial.*; 
-//import cc.arduino.*;  //make sure you import the Arduino library (Sketch > Import Library > Add Library > Arduino(Firmata))
+import cc.arduino.*;  //make sure you import the Arduino library (Sketch > Import Library > Add Library > Arduino(Firmata))
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
@@ -38,9 +38,9 @@ String myQuery;
 // Arduino stuff
 Arduino arduino;
  int potpin = 0;
- int doorpin = 8;
- int bellpin = 9; 
- int stoppin = 10; 
+ int doorpin = 9;
+ int bellpin = 10; 
+ int stoppin = 11; 
  
 
 // VARIABLES
@@ -149,8 +149,8 @@ int toastmode = 0;  //MODES: 0 = wait for mode selection, 1 = toast from image, 
 void setup() {
   fullScreen();
   //size(480, 800);
-  //println(Arduino.list());            //get a list of the ports
-  //arduino = new Arduino(this, Arduino.list()[0], 57600);  //initialize arduino
+  println(Arduino.list());            //get a list of the ports
+  arduino = new Arduino(this, Arduino.list()[1], 57600);  //initialize arduino
   buttonfont = createFont("Gentium Basic", 24);
   numberfont = createFont("Gentium Basic", 48);
   toastmode = 0;                        //start by asking what the user would like to toast
@@ -158,19 +158,16 @@ void setup() {
   hour = getScheduledHour();            //grab the stored time
   minute = getScheduledMinute();
   emergencyStop(false);
-
-  try { 
-    robot = new Robot();
-  } 
-  catch (AWTException e) {
-    e.printStackTrace();
-    exit();
-  }
+  
+  arduino.pinMode(doorpin,Arduino.SERVO);
+  arduino.pinMode(bellpin,Arduino.SERVO);
+  arduino.pinMode(stoppin,Arduino.INPUT);
+  arduino.pinMode(potpin,Arduino.INPUT);
 }
 
 void draw() {
   checkButtons(mouseX, mouseY);
-  //arduinoLoop(arduino);  //does all the arduino monitoring
+  arduinoLoop(arduino);  //does all the arduino monitoring
   background(backgroundcolor[0], backgroundcolor[1], backgroundcolor[2]);
   stroke(0);
   if (toastmode !=3)
@@ -660,17 +657,16 @@ int getScheduledMinute()
   return Integer.parseInt(timearray[0].substring(timearray[0].indexOf(":")+1, timearray[0].length()));
 }
 
-/*
+
 void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  {
- readStop(arduino)
+ //readStop(arduino);
  power = readPot(arduino);
- 
+ storePot(power);
  }
  
  int readPot(Arduino arduino)  //reads the value of the potentiometer
  {
- arduino.pinMode(potpin,Arduino.INPUT);
  power = arduino.analogRead(potpin);
  int percentpower = (int)((double)power/10.23);
  return percentpower;
@@ -678,7 +674,6 @@ void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  
  void readStop(Arduino arduino)
  {
- arduino.pinMode(stoppin, Arduino.INPUT);
  if(arduino.digitalRead(stoppin)==Arduino.HIGH) emergencyStop(true);
  }
  
@@ -687,7 +682,6 @@ void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  int dooropen = 180; 
  int doorclosed = 0;
  int speed = 10;  //step rate of servo
- arduino.pinMode(doorpin,arduino.SERVO);
  int j = 0;
  while(j < dooropen)
  {
@@ -702,7 +696,6 @@ void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  int dooropen = 180; 
  int doorclosed = 0;
  int speed = 10;  //step rate of servo
- arduino.pinMode(doorpin,arduino.SERVO);
  int j = 180;
  while(j > doorclosed)
  {
@@ -717,9 +710,11 @@ void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  arduino.pinMode(bellpin,arduino.SERVO);
  arduino.servoWrite(bellpin,0);
  delay(50);
- arduino.servoWrite(bellpin,90);  
+ arduino.servoWrite(bellpin,180);  
+ delay(50);
+ arduino.servoWrite(bellpin,0);  
  }
- */
+ 
 
 void storePot(int percentpower)  //stores the percent power for kenny's python script
 {
@@ -762,6 +757,7 @@ void startToasting()
       println("IMAGE PROCESSING INITIALIZED");
       launch("/home/pi/421_521_final_project/GUI/toastGUI/runimageprocessing.desktop"); 
       imageprocessed = true;
+      closeDoor(arduino);
     }
     else if((millis() > startmillis+5000) && imageprocessed && !printcorestarted)
     {
@@ -779,6 +775,8 @@ void startToasting()
       printfinished = true;
       isToasting = false;
       toastmode=0;
+      openDoor(arduino);
+      ringBell(arduino);
     }
   }
   else
@@ -790,6 +788,8 @@ void startToasting()
       printfinished = true;
       isToasting = false;
       toastmode=0;
+      openDoor(arduino);
+      ringBell(arduino);
   }
 }
 
