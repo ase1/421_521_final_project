@@ -5,6 +5,14 @@ import matplotlib.cm
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+powerlevel_file = imagename = "/home/pi/421_521_final_project/GUI/toastGUI/powerlevel.txt"
+
+with open(powerlevel_file) as g:
+    powerlevel = g.read().replace('\n', '')
+    powerlevel = int(powerlevel)
+
+
 def image_resize(image,x,y): #define a function to resize an image to x width and y height
     im_2=image.resize((x, y))
     return np.asarray(im_2)
@@ -96,7 +104,7 @@ X_new = rescale(X,10,110)
 
 Y_new = rescale(Y,160,60)
 
-P_new = rescale(P,0,255)
+P_new = rescale(P,0,155*np.floor(powerlevel/100)+100)
 P_new = np.floor(P_new)
 
 print "Generating G Code........."
