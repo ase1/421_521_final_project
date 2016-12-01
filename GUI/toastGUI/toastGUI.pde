@@ -709,9 +709,9 @@ void arduinoLoop(Arduino arduino)  // does all the arduino monitoring stuff
  {
  arduino.pinMode(bellpin,arduino.SERVO);
  arduino.servoWrite(bellpin,0);
- delay(50);
+ delay(500);
  arduino.servoWrite(bellpin,180);  
- delay(50);
+ delay(1000);
  arduino.servoWrite(bellpin,0);  
  }
  
